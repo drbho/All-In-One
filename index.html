@@ -2,71 +2,160 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>La Mia Super Dashboard</title>
+    <title>ZENITH | Neural Dashboard</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --accent: #00adb5; --text: #eee; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        .container { display: flex; gap: 20px; width: 90%; max-width: 1200px; flex-wrap: wrap; }
-        
-        /* Sezione Appunti */
-        .notes-area { flex: 1; min-width: 300px; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        textarea { width: 100%; height: 200px; background: transparent; color: white; border: none; outline: none; resize: none; font-size: 16px; }
+        :root {
+            --neon: #00ff9d;
+            --glass: rgba(10, 10, 10, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+        }
 
-        /* Sezione Video */
-        .video-area { flex: 1; min-width: 300px; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; text-align: center; }
-        video { width: 100%; border-radius: 10px; margin-top: 10px; background: #000; }
-        input[type="file"] { margin-bottom: 10px; font-size: 14px; }
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif; /* Font futuristico */
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; width: 100%; margin-top: 20px; }
-        .card { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; text-decoration: none; color: white; border: 1px solid #444; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: scale(1.05); }
+        /* Effetto particelle di sfondo (simulato) */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; z-index: -1;
+            filter: blur(1px);
+        }
+
+        /* Sidebar di Comando */
+        .sidebar {
+            width: 80px;
+            background: var(--glass);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            gap: 30px;
+        }
+
+        .icon-btn {
+            width: 45px; height: 45px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .icon-btn:hover { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .module {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 4px; /* Taglio netto, stile high-tech */
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Widget Crypto 1M€ */
+        .market-header { color: var(--neon); font-size: 0.7rem; letter-spacing: 2px; }
+        .price { font-size: 1.8rem; font-weight: bold; margin: 5px 0; }
+
+        /* Terminale */
+        .terminal {
+            grid-column: 1 / 5; grid-row: 8 / 13;
+            background: rgba(0,0,0,0.9);
+            font-family: 'Courier New', monospace;
+            color: var(--neon);
+            font-size: 0.8rem;
+            overflow-y: auto;
+        }
+
+        /* Video Area */
+        .video-main { grid-column: 5 / 13; grid-row: 1 / 10; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 4px; }
+
+        /* Appunti Gold */
+        .notes-pro { grid-column: 1 / 5; grid-row: 1 / 8; }
+        textarea {
+            width: 100%; height: 90%; background: transparent; color: #fff;
+            border: none; outline: none; font-size: 1.1rem;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <h2 style="color: var(--accent);">Mio Centro di Comando</h2>
+    <aside class="sidebar">
+        <div class="icon-btn"></div>
+        <div class="icon-btn"></div>
+        <div class="icon-btn"></div>
+        <div style="margin-top: auto; color: var(--neon); font-size: 10px; padding-bottom: 20px;">v4.0.1</div>
+    </aside>
 
-    <div class="container">
-        <div class="notes-area">
-            <h3>📝 Appunti Rapidi</h3>
-            <textarea id="note-input" placeholder="Scrivi qualcosa... (si salva da solo!)"></textarea>
+    <main class="workspace">
+        
+        <div class="module" style="grid-column: 1 / 3; grid-row: 1 / 3;">
+            <div class="market-header">BTC/USD</div>
+            <div class="price" id="btc-price">Loading...</div>
+            <div style="color: #4ade80; font-size: 0.8rem;">▲ 2.4%</div>
         </div>
 
-        <div class="video-area">
-            <h3>🎬 Player Video</h3>
-            <input type="file" id="video-upload" accept="video/*">
-            <video id="video-player" controls></video>
+        <div class="module notes-pro">
+            <div class="market-header" style="margin-bottom:10px;">STRATEGIC NOTES</div>
+            <textarea placeholder="Write the future..."></textarea>
         </div>
-    </div>
 
-    <div class="grid">
-        <a href="https://www.google.com" class="card">🌐 Google</a>
-        <a href="https://www.youtube.com" class="card">📺 YouTube</a>
-        <a href="https://web.whatsapp.com" class="card">💬 WhatsApp</a>
-        <a href="https://chat.openai.com" class="card">🤖 ChatGPT</a>
-    </div>
+        <div class="module terminal" id="terminal">
+            <div>> Initializing Zenith Neural Link...</div>
+            <div>> Security Protocol: ACTIVE</div>
+            <div>> Uplink established.</div>
+        </div>
+
+        <div class="module video-main">
+            <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1" allow="autoplay"></iframe>
+        </div>
+
+        <div class="module" style="grid-column: 5 / 9; grid-row: 10 / 13;">
+            <div class="market-header">ENVIRONMENT</div>
+            <div style="font-size: 2rem;">22°C</div>
+            <div style="opacity: 0.5;">MILAN / 45.4642° N</div>
+        </div>
+
+    </main>
 
     <script>
-        // Gestione Appunti (Salvataggio automatico)
-        const noteInput = document.getElementById('note-input');
-        noteInput.value = localStorage.getItem('myDashboardNotes') || "";
-        noteInput.addEventListener('input', () => {
-            localStorage.setItem('myDashboardNotes', noteInput.value);
-        });
+        // Simulazione caricamento dati Crypto in tempo reale
+        function updatePrices() {
+            const mockPrice = (Math.random() * (100000 - 95000) + 95000).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('btc-price').innerText = `$${mockPrice}`;
+        }
+        setInterval(updatePrices, 2000);
 
-        // Gestione Caricamento Video
-        const videoUpload = document.getElementById('video-upload');
-        const videoPlayer = document.getElementById('video-player');
-
-        videoUpload.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                videoPlayer.src = url;
-                videoPlayer.play();
-            }
-        });
+        // Effetto testo nel terminale
+        const term = document.getElementById('terminal');
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.innerText = `> ${msg}`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+        setInterval(() => {
+            const logs = ["Syncing neural nodes...", "Data packet received", "Encrypted connection stable", "AI core optimized"];
+            addLog(logs[Math.floor(Math.random()*logs.length)]);
+        }, 5000);
     </script>
 </body>
 </html>
