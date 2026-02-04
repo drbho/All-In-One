@@ -3,146 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZENITH OS | Million Dollar Dashboard</title>
+    <title>ZENITH OS | Global Command</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@200;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon: #00ff9d; --panic: #ff0055; --bg: #050505;
-            --glass: rgba(20, 20, 20, 0.85); --border: rgba(255, 255, 255, 0.1);
+            --neon: #00ff9d; --warning: #ffcc00; --panic: #ff0044; 
+            --bg: #020202; --glass: rgba(10, 10, 10, 0.8); 
+            --border: rgba(0, 255, 157, 0.2);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; cursor: crosshair; }
         body {
-            background: var(--bg); color: #fff; font-family: 'Inter', sans-serif;
-            margin: 0; padding: 15px; min-height: 100vh;
-            display: flex; flex-direction: column; gap: 15px;
+            background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace;
+            margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- LAYOUT GRID RESPONSIVE (PC & ANDROID) --- */
+        /* SFONDO DINAMICO */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 3px, 3px 100%; z-index: 100; pointer-events: none;
+        }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border: 1px solid var(--border); margin-bottom: 15px; background: var(--glass);
+        }
+
         .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px; width: 100%; max-width: 1400px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px;
         }
 
         .module {
-            background: var(--glass); backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: 15px;
-            padding: 20px; position: relative; overflow: hidden;
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 15px; position: relative; overflow: hidden;
         }
 
-        /* --- PANIC BUTTON (SICUREZZA MILITARE) --- */
-        #panic-btn {
-            background: var(--panic); color: white; border: none;
-            padding: 10px 20px; border-radius: 8px; font-weight: bold;
-            cursor: pointer; width: 100%; margin-bottom: 10px;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        /* DIMENSIONI MODULI */
+        .col-4 { grid-column: span 4; }
+        .col-8 { grid-column: span 8; }
+        .col-3 { grid-column: span 3; }
+        .col-6 { grid-column: span 6; }
+
+        h2 { 
+            font-family: 'Orbitron'; font-size: 0.6rem; color: var(--neon); 
+            margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 2px;
         }
 
-        /* --- GRAFICO FINANZIARIO --- */
-        .chart-container { height: 200px; width: 100%; }
-
-        /* --- VIDEO ADATTIVO --- */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-container iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px;
+        /* --- SISTEMA DI MONITORAGGIO RETE --- */
+        .network-log { font-size: 0.6rem; color: var(--neon); height: 80px; overflow-y: hidden; }
+        
+        /* --- MAPPA SATELLITARE (SIMULATA) --- */
+        .map-container {
+            width: 100%; height: 200px; background: url('https://www.google.com/maps/vt/pb=!1m4!1m3!1i9!2i270!3i175!2m3!1e0!2sm!3i420120488!3m8!2sit!3sUS!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1f2!4e0') center;
+            filter: grayscale(1) invert(1) contrast(1.5); opacity: 0.5; border-radius: 4px;
         }
 
-        /* --- APPUNTI & TODO --- */
-        textarea {
-            width: 100%; height: 120px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border); color: var(--neon);
-            padding: 10px; border-radius: 8px; font-family: monospace; resize: none;
+        /* --- BOTTONI AZIONE --- */
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        button {
+            background: transparent; border: 1px solid var(--border); color: #fff;
+            padding: 8px; font-family: 'Orbitron'; font-size: 0.5rem; transition: 0.3s;
         }
+        button:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
+        .panic { border-color: var(--panic); color: var(--panic); }
 
-        h2 { font-size: 0.7rem; letter-spacing: 2px; color: var(--neon); text-transform: uppercase; margin-top: 0; }
+        /* --- STATI SISTEMA --- */
+        .status-bar { height: 4px; background: #222; margin-top: 10px; position: relative; }
+        .status-fill { height: 100%; background: var(--neon); width: 65%; box-shadow: 0 0 10px var(--neon); }
 
-        /* Ottimizzazione Mobile */
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .dashboard { grid-template-columns: 1fr; }
-            h1 { font-size: 1.5rem; text-align: center; }
-        }
+        @media (max-width: 900px) { .col-4, .col-8, .col-3, .col-6 { grid-column: span 12; } }
     </style>
 </head>
 <body id="main-body">
 
-    <h1 id="main-title" style="color: white; font-weight: 200; letter-spacing: 5px; margin: 10px 0;">ZENITH <span style="color: var(--neon)">OS</span></h1>
-
-    <button id="panic-btn" onclick="executePanic()">Esegui Protocollo Ghost (PANIC)</button>
+    <header>
+        <div style="font-family: 'Orbitron'; letter-spacing: 5px;">ZENITH <span style="color: var(--neon)">CORE</span></div>
+        <div id="clock">00:00:00</div>
+        <div style="font-size: 0.7rem; color: var(--warning);">SECURE CONNECTION: ACTIVE</div>
+    </header>
 
     <div class="dashboard">
         
-        <div class="module">
-            <h2>Market Intelligence</h2>
-            <div class="chart-container">
-                <canvas id="cryptoChart"></canvas>
+        <div class="module col-8">
+            <h2>Market Hegemony // Real-Time Assets</h2>
+            <div style="display: flex; gap: 20px; align-items: baseline;">
+                <div id="price-tag" style="font-size: 2rem; font-weight: 900;">$ 98,432.12</div>
+                <div style="color: var(--neon); font-size: 0.8rem;">▲ +2.4% NASDAQ</div>
             </div>
-            <div id="price-tag" style="font-size: 1.5rem; font-weight: bold; margin-top: 10px;">BTC $96,432.12</div>
+            <div style="height: 180px;"><canvas id="mainChart"></canvas></div>
         </div>
 
-        <div class="module">
-            <h2>Neural Stream</h2>
-            <div class="video-container">
-                <iframe id="stream-frame" src="https://www.youtube.com/embed/jfKfPfyJRdk" allowfullscreen></iframe>
+        <div class="module col-4">
+            <h2>System Protocols</h2>
+            <div class="btn-grid">
+                <button onclick="alert('Luci oscurate')">DARK MODE</button>
+                <button onclick="alert('Server criptati')">ENCRYPT</button>
+                <button onclick="alert('Droni attivati')">DRONE SCAN</button>
+                <button class="panic" onclick="executePanic()">GHOST PROTOCOL</button>
+            </div>
+            <h2 style="margin-top: 20px;">Network Traffic</h2>
+            <div class="network-log" id="net-log"></div>
+        </div>
+
+        <div class="module col-6">
+            <h2>Asset Tracking // Global Ops</h2>
+            <div class="map-container"></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.7rem;">
+                <span>LAT: 45.4642</span><span>LON: 9.1900</span><span>ALT: 12.000m</span>
             </div>
         </div>
 
-        <div class="module">
-            <h2>Encrypted Notes</h2>
-            <textarea id="secure-notes" placeholder="Dati sensibili..."></textarea>
+        <div class="module col-3">
+            <h2>Environment Control</h2>
+            <div style="font-size: 1.5rem;">22.8°C <span style="font-size: 0.7rem; opacity: 0.5;">OFFICE</span></div>
+            <div class="status-bar"><div class="status-fill" style="width: 22%;"></div></div>
+            <div style="font-size: 1.5rem; margin-top: 15px;">88% <span style="font-size: 0.7rem; opacity: 0.5;">ENERGY</span></div>
+            <div class="status-bar"><div class="status-fill" style="width: 88%; background: var(--warning);"></div></div>
         </div>
 
-        <div class="module" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2>Environment</h2>
-                <div style="font-size: 2rem;">24°C</div>
-            </div>
-            <div style="text-align: right; opacity: 0.5; font-size: 0.8rem;">
-                LAT: 45.46<br>LON: 9.19
-            </div>
+        <div class="module col-3">
+            <h2>Silent Comms</h2>
+            <textarea id="secure-notes" style="width: 100%; height: 100px; background: transparent; border: 1px dashed var(--border); color: var(--neon); font-family: 'JetBrains Mono'; font-size: 0.7rem; outline: none;" placeholder="Scrivi qui..."></textarea>
         </div>
 
     </div>
 
     <script>
-        // 1. GESTIONE PANIC BUTTON (Scomparsa Totale)
+        // Orologio
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT');
+        }, 1000);
+
+        // Protocollo Ghost
         function executePanic() {
-            if(confirm("Attivare Protocollo Ghost? Tutti i dati sensibili verranno nascosti.")) {
-                document.getElementById('main-body').style.display = 'none';
-                window.location.href = "https://www.google.com"; // Ti reindirizza su Google per sicurezza
-            }
+            document.body.style.display = 'none';
+            window.location.replace("https://www.google.com");
         }
 
-        // 2. GRAFICO FINANZIARIO (Chart.js)
-        const ctx = document.getElementById('cryptoChart').getContext('2d');
+        // Log di rete simulato
+        const log = document.getElementById('net-log');
+        const actions = ["INCOMING PKT", "GEO-LOCK OK", "CSS BYPASS", "ENCRYPTING", "NODE 04 ACTIVE"];
+        setInterval(() => {
+            const entry = document.createElement('div');
+            entry.innerText = `> ${actions[Math.floor(Math.random()*actions.length)]} [${Math.random().toString(16).substring(2, 8)}]`;
+            log.prepend(entry);
+            if(log.childNodes.length > 5) log.removeChild(log.lastChild);
+        }, 2000);
+
+        // Grafico Finanziario
+        const ctx = document.getElementById('mainChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['1H', '2H', '3H', '4H', '5H', '6H'],
+                labels: Array(12).fill(''),
                 datasets: [{
-                    label: 'Crypto Index',
-                    data: [95000, 96200, 95800, 97000, 96500, 98000],
+                    data: [65, 59, 80, 81, 56, 55, 40, 70, 90, 100, 95, 110],
                     borderColor: '#00ff9d',
+                    borderWidth: 1,
+                    pointRadius: 0,
                     tension: 0.4,
-                    fill: false
+                    fill: true,
+                    backgroundColor: 'rgba(0, 255, 157, 0.05)'
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#555' } } }
+                scales: { x: { display: false }, y: { display: false } }
             }
         });
 
-        // 3. PERSISTENZA DATI (Android/PC Sync Locale)
+        // Salvataggio Note
         const notes = document.getElementById('secure-notes');
         notes.value = localStorage.getItem('zenith_notes') || '';
         notes.addEventListener('input', () => localStorage.setItem('zenith_notes', notes.value));
-
-        // 4. FIX TOUCH PER ANDROID
-        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
 </html>
