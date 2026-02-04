@@ -2,133 +2,149 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZENITH OS | Global Command</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH OS | BLACK-SITE COMMAND</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@200;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon: #00ff9d; --warning: #ffcc00; --panic: #ff0044; 
-            --bg: #020202; --glass: rgba(10, 10, 10, 0.8); 
-            --border: rgba(0, 255, 157, 0.2);
+            --neon: #00ff9d; --warning: #ffcc00; --panic: #ff0044; --cyan: #00d4ff;
+            --bg: #010101; --glass: rgba(10, 10, 15, 0.9); --border: rgba(0, 255, 157, 0.15);
         }
 
         * { box-sizing: border-box; cursor: crosshair; }
         body {
             background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace;
-            margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden;
+            margin: 0; padding: 10px; height: 100vh; overflow: hidden; font-size: 0.7rem;
+            transition: filter 1s ease;
         }
 
-        /* SFONDO DINAMICO */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-            background-size: 100% 3px, 3px 100%; z-index: 100; pointer-events: none;
+        /* EFFETTO SPEGNIMENTO */
+        body.shutdown-active {
+            filter: brightness(0) contrast(2);
+            background: #000;
+            pointer-events: none;
         }
 
         header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border: 1px solid var(--border); margin-bottom: 15px; background: var(--glass);
+            display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center;
+            padding: 5px 15px; border: 1px solid var(--border); background: var(--glass); margin-bottom: 8px;
         }
 
-        .dashboard {
-            display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px;
+        .main-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr);
+            gap: 8px; height: calc(100vh - 80px);
         }
 
         .module {
             background: var(--glass); border: 1px solid var(--border);
-            padding: 15px; position: relative; overflow: hidden;
+            padding: 10px; position: relative; overflow: hidden;
         }
-
-        /* DIMENSIONI MODULI */
-        .col-4 { grid-column: span 4; }
-        .col-8 { grid-column: span 8; }
-        .col-3 { grid-column: span 3; }
-        .col-6 { grid-column: span 6; }
 
         h2 { 
-            font-family: 'Orbitron'; font-size: 0.6rem; color: var(--neon); 
-            margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 2px;
+            font-family: 'Orbitron'; font-size: 0.55rem; color: var(--neon); 
+            margin: 0 0 8px 0; border-left: 2px solid var(--neon); padding-left: 5px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* --- SISTEMA DI MONITORAGGIO RETE --- */
-        .network-log { font-size: 0.6rem; color: var(--neon); height: 80px; overflow-y: hidden; }
-        
-        /* --- MAPPA SATELLITARE (SIMULATA) --- */
-        .map-container {
-            width: 100%; height: 200px; background: url('https://www.google.com/maps/vt/pb=!1m4!1m3!1i9!2i270!3i175!2m3!1e0!2sm!3i420120488!3m8!2sit!3sUS!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1f2!4e0') center;
-            filter: grayscale(1) invert(1) contrast(1.5); opacity: 0.5; border-radius: 4px;
+        /* --- LAYOUT GRID --- */
+        .weather-map { grid-column: span 5; grid-row: span 6; padding: 0; }
+        .market { grid-column: span 4; grid-row: span 6; }
+        .ops-control { grid-column: span 3; grid-row: span 6; }
+        .cyber { grid-column: span 3; grid-row: span 3; }
+        .radar { grid-column: span 3; grid-row: span 3; }
+        .news { grid-column: span 6; grid-row: span 3; }
+        .status-strip { grid-column: span 12; grid-row: span 2; display: flex; gap: 8px; }
+
+        /* WEATHER MAP STYLING */
+        #map-frame {
+            width: 100%; height: 100%; border: none;
+            filter: invert(1) hue-rotate(80deg) brightness(0.8) contrast(1.2);
+            pointer-events: none;
         }
 
-        /* --- BOTTONI AZIONE --- */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        button {
-            background: transparent; border: 1px solid var(--border); color: #fff;
-            padding: 8px; font-family: 'Orbitron'; font-size: 0.5rem; transition: 0.3s;
+        /* RADAR ANIMATION */
+        .radar-box {
+            width: 80px; height: 80px; border: 1px solid var(--neon); border-radius: 50%;
+            margin: auto; position: relative;
         }
-        button:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
-        .panic { border-color: var(--panic); color: var(--panic); }
+        .radar-box::after {
+            content: ""; position: absolute; width: 100%; height: 100%;
+            background: conic-gradient(from 0deg, var(--neon), transparent);
+            border-radius: 50%; animation: sweep 3s linear infinite;
+        }
+        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* --- STATI SISTEMA --- */
-        .status-bar { height: 4px; background: #222; margin-top: 10px; position: relative; }
-        .status-fill { height: 100%; background: var(--neon); width: 65%; box-shadow: 0 0 10px var(--neon); }
+        /* BOTTONI CRITICI */
+        .btn-shutdown {
+            background: #220000; border: 1px solid var(--panic); color: var(--panic);
+            width: 100%; padding: 10px; font-family: 'Orbitron'; font-weight: 900;
+            margin-top: 10px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-shutdown:hover { background: var(--panic); color: white; box-shadow: 0 0 20px var(--panic); }
 
-        @media (max-width: 900px) { .col-4, .col-8, .col-3, .col-6 { grid-column: span 12; } }
+        .stat-card { background: rgba(255,255,255,0.03); flex: 1; padding: 10px; border: 1px solid var(--border); }
+        .data-big { font-size: 1.1rem; color: var(--neon); font-weight: bold; }
     </style>
 </head>
-<body id="main-body">
+<body id="ui-body">
 
     <header>
-        <div style="font-family: 'Orbitron'; letter-spacing: 5px;">ZENITH <span style="color: var(--neon)">CORE</span></div>
-        <div id="clock">00:00:00</div>
-        <div style="font-size: 0.7rem; color: var(--warning);">SECURE CONNECTION: ACTIVE</div>
+        <div style="font-family: 'Orbitron'; color: var(--warning);">SYS: <span id="uptime">ONLINE</span></div>
+        <div style="text-align: center; font-family: 'Orbitron'; letter-spacing: 12px;">ZENITH V.4.0</div>
+        <div id="clock" style="text-align: right;">00:00:00</div>
     </header>
 
-    <div class="dashboard">
-        
-        <div class="module col-8">
-            <h2>Market Hegemony // Real-Time Assets</h2>
-            <div style="display: flex; gap: 20px; align-items: baseline;">
-                <div id="price-tag" style="font-size: 2rem; font-weight: 900;">$ 98,432.12</div>
-                <div style="color: var(--neon); font-size: 0.8rem;">▲ +2.4% NASDAQ</div>
-            </div>
-            <div style="height: 180px;"><canvas id="mainChart"></canvas></div>
-        </div>
-
-        <div class="module col-4">
-            <h2>System Protocols</h2>
-            <div class="btn-grid">
-                <button onclick="alert('Luci oscurate')">DARK MODE</button>
-                <button onclick="alert('Server criptati')">ENCRYPT</button>
-                <button onclick="alert('Droni attivati')">DRONE SCAN</button>
-                <button class="panic" onclick="executePanic()">GHOST PROTOCOL</button>
-            </div>
-            <h2 style="margin-top: 20px;">Network Traffic</h2>
-            <div class="network-log" id="net-log"></div>
-        </div>
-
-        <div class="module col-6">
-            <h2>Asset Tracking // Global Ops</h2>
-            <div class="map-container"></div>
-            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.7rem;">
-                <span>LAT: 45.4642</span><span>LON: 9.1900</span><span>ALT: 12.000m</span>
+    <div class="main-grid">
+        <div class="module weather-map">
+            <h2>Satellite Weather // Global Radar</h2>
+            <iframe id="map-frame" src="https://www.openstreetmap.org/export/embed.html?bbox=7.0,43.0,12.0,47.0&layer=mapnik"></iframe>
+            <div style="position: absolute; bottom: 10px; left: 10px; background: #000; padding: 5px; font-size: 0.5rem; border: 1px solid var(--neon);">
+                COORD: 45.46°N | 9.19°E
             </div>
         </div>
 
-        <div class="module col-3">
-            <h2>Environment Control</h2>
-            <div style="font-size: 1.5rem;">22.8°C <span style="font-size: 0.7rem; opacity: 0.5;">OFFICE</span></div>
-            <div class="status-bar"><div class="status-fill" style="width: 22%;"></div></div>
-            <div style="font-size: 1.5rem; margin-top: 15px;">88% <span style="font-size: 0.7rem; opacity: 0.5;">ENERGY</span></div>
-            <div class="status-bar"><div class="status-fill" style="width: 88%; background: var(--warning);"></div></div>
+        <div class="module market">
+            <h2>Hegemony Assets</h2>
+            <div style="font-size: 1.5rem; color: #fff;">$ 96,284.10 <span style="font-size: 0.6rem; color: var(--neon);">+2.1%</span></div>
+            <canvas id="miniChart" height="150"></canvas>
+            <div style="margin-top: 10px; font-size: 0.5rem; color: var(--cyan);">
+                > SYNCING WITH TOKYO EXCHANGE... DONE
+            </div>
         </div>
 
-        <div class="module col-3">
-            <h2>Silent Comms</h2>
-            <textarea id="secure-notes" style="width: 100%; height: 100px; background: transparent; border: 1px dashed var(--border); color: var(--neon); font-family: 'JetBrains Mono'; font-size: 0.7rem; outline: none;" placeholder="Scrivi qui..."></textarea>
+        <div class="module ops-control">
+            <h2>System Power</h2>
+            <div class="stat-card">
+                <div>GRID STATUS</div>
+                <div class="data-big">OPTIMAL</div>
+            </div>
+            <button class="btn-shutdown" onclick="killServer()">OFFLINE SERVER</button>
+            <button class="btn-shutdown" style="border-color: var(--warning); color: var(--warning); background: #221100; margin-top: 5px;" onclick="location.href='https://google.com'">GHOST MODE</button>
         </div>
 
+        <div class="module cyber">
+            <h2>Infiltration Log</h2>
+            <div id="terminal-log" style="font-size: 0.5rem; color: var(--cyan);"></div>
+        </div>
+
+        <div class="module radar">
+            <h2>Object Tracking</h2>
+            <div class="radar-box"></div>
+        </div>
+
+        <div class="module news">
+            <h2>Global Intel</h2>
+            <marquee scrollamount="3" style="color: var(--gold);">*** BREAKING: GLOBAL LIQUIDITY SPIKE DETECTED *** SATELLITE 04 RE-POSITIONED OVER SECTOR 7G ***</marquee>
+            <div style="opacity: 0.6; margin-top: 5px;">> AI Summary: Markets reacting to tech surge. No threats detected in 500mi radius.</div>
+        </div>
+
+        <div class="status-strip">
+            <div class="stat-card"><h2>CORE TEMP</h2><div class="data-big">32°C</div></div>
+            <div class="stat-card"><h2>MEMORY</h2><div class="data-big">1.2 TB/s</div></div>
+            <div class="stat-card"><h2>GEO-LOCK</h2><div class="data-big">ACTIVE</div></div>
+            <div class="stat-card"><h2>SIGNAL</h2><div class="data-big">MAX</div></div>
+        </div>
     </div>
 
     <script>
@@ -137,49 +153,56 @@
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT');
         }, 1000);
 
-        // Protocollo Ghost
-        function executePanic() {
-            document.body.style.display = 'none';
-            window.location.replace("https://www.google.com");
+        // Funzione Spegnimento Server (Sequenza di distruzione)
+        function killServer() {
+            if(confirm("CONFERMA SPEGNIMENTO TOTALE? (I dati non salvati andranno persi)")) {
+                const body = document.getElementById('ui-body');
+                let logs = document.getElementById('terminal-log');
+                
+                // Fase 1: Log di errore
+                logs.innerHTML = "<span style='color:red'>> TERMINATING ALL NODES...</span><br>" + logs.innerHTML;
+                
+                setTimeout(() => {
+                    // Fase 2: Distorsione visiva
+                    body.style.filter = "invert(1) contrast(5) blur(2px)";
+                    document.body.innerHTML += "<div style='position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:red; font-size:5rem; font-family:Orbitron; z-index:9999;'>OFFLINE</div>";
+                }, 1000);
+
+                setTimeout(() => {
+                    // Fase 3: Nero totale
+                    body.classList.add('shutdown-active');
+                    console.log("Server Terminated.");
+                }, 2500);
+            }
         }
 
-        // Log di rete simulato
-        const log = document.getElementById('net-log');
-        const actions = ["INCOMING PKT", "GEO-LOCK OK", "CSS BYPASS", "ENCRYPTING", "NODE 04 ACTIVE"];
+        // Terminal Log simulato
+        const logBox = document.getElementById('terminal-log');
+        const msgs = ["ENCRYPTING...", "HASH: 0x82f...", "SIGNAL STABLE", "UPLINK RE-ROUTE"];
         setInterval(() => {
-            const entry = document.createElement('div');
-            entry.innerText = `> ${actions[Math.floor(Math.random()*actions.length)]} [${Math.random().toString(16).substring(2, 8)}]`;
-            log.prepend(entry);
-            if(log.childNodes.length > 5) log.removeChild(log.lastChild);
+            const d = document.createElement('div');
+            d.innerText = `> ${msgs[Math.floor(Math.random()*msgs.length)]}`;
+            logBox.prepend(d);
+            if(logBox.childNodes.length > 6) logBox.removeChild(logBox.lastChild);
         }, 2000);
 
-        // Grafico Finanziario
-        const ctx = document.getElementById('mainChart').getContext('2d');
+        // Chart
+        const ctx = document.getElementById('miniChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array(12).fill(''),
+                labels: Array(15).fill(''),
                 datasets: [{
-                    data: [65, 59, 80, 81, 56, 55, 40, 70, 90, 100, 95, 110],
+                    data: [50, 45, 60, 55, 70, 65, 80, 75, 90, 85, 100, 110, 105, 120, 130],
                     borderColor: '#00ff9d',
                     borderWidth: 1,
                     pointRadius: 0,
-                    tension: 0.4,
                     fill: true,
-                    backgroundColor: 'rgba(0, 255, 157, 0.05)'
+                    backgroundColor: 'rgba(0,255,157,0.1)'
                 }]
             },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x:{display:false}, y:{display:false}} }
         });
-
-        // Salvataggio Note
-        const notes = document.getElementById('secure-notes');
-        notes.value = localStorage.getItem('zenith_notes') || '';
-        notes.addEventListener('input', () => localStorage.setItem('zenith_notes', notes.value));
     </script>
 </body>
 </html>
