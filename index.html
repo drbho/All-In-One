@@ -3,206 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENITH OS | BLACK-SITE COMMAND</title>
+    <title>ZENITH | OMNIPOTENCE OS</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon: #00ff9d; --warning: #ffcc00; --panic: #ff0044; --cyan: #00d4ff;
-            --bg: #010101; --glass: rgba(10, 10, 15, 0.9); --border: rgba(0, 255, 157, 0.15);
+            --neon: #00ff9d; --blood: #ff0044; --gold: #d4af37; --cyan: #00f2ff;
+            --bg: #000000; --glass: rgba(5, 5, 5, 0.95); --border: rgba(0, 255, 157, 0.3);
         }
 
-        * { box-sizing: border-box; cursor: crosshair; }
+        * { box-sizing: border-box; cursor: crosshair; outline: none; }
         body {
             background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace;
-            margin: 0; padding: 10px; height: 100vh; overflow: hidden; font-size: 0.7rem;
-            transition: filter 1s ease;
+            margin: 0; padding: 5px; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
-        /* EFFETTO SPEGNIMENTO */
-        body.shutdown-active {
-            filter: brightness(0) contrast(2);
-            background: #000;
-            pointer-events: none;
+        /* --- EFFETTO GLITCH SHUTDOWN --- */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); filter: hue-rotate(90deg); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
         }
 
+        .kill-sequence { animation: glitch 0.1s infinite; filter: invert(1); background: white !important; }
+
+        /* --- HEADER --- */
         header {
-            display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center;
-            padding: 5px 15px; border: 1px solid var(--border); background: var(--glass); margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; border: 1px solid var(--border);
+            background: linear-gradient(90deg, #000, #051a10, #000);
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.1); margin-bottom: 5px;
         }
 
-        .main-grid {
+        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 15px; font-size: 1.2rem; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+
+        /* --- GRID SYSTEM --- */
+        .omni-grid {
             display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr);
-            gap: 8px; height: calc(100vh - 80px);
+            gap: 5px; flex-grow: 1;
         }
 
         .module {
             background: var(--glass); border: 1px solid var(--border);
-            padding: 10px; position: relative; overflow: hidden;
+            padding: 10px; position: relative; transition: 0.3s;
+        }
+        .module:hover { border-color: var(--neon); box-shadow: inset 0 0 15px rgba(0, 255, 157, 0.1); }
+
+        /* --- POSITIONING --- */
+        .m-wealth { grid-column: span 3; grid-row: span 5; }
+        .m-map { grid-column: span 6; grid-row: span 8; border: 2px solid var(--cyan); }
+        .m-chat { grid-column: span 3; grid-row: span 5; }
+        .m-status { grid-column: span 3; grid-row: span 7; }
+        .m-intel { grid-column: span 6; grid-row: span 4; }
+        .m-control { grid-column: span 3; grid-row: span 7; }
+
+        /* --- ASSETS STYLING --- */
+        .asset-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .val-gold { color: var(--gold); font-weight: bold; }
+
+        /* --- CHAT CRIPTATA --- */
+        #neural-chat { font-size: 0.65rem; height: 85%; overflow-y: hidden; color: var(--cyan); }
+        .msg { margin-bottom: 8px; border-left: 2px solid var(--cyan); padding-left: 5px; opacity: 0; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* --- MAPPA --- */
+        #topo-map {
+            width: 100%; height: 100%; filter: contrast(1.5) brightness(0.7) sepia(1) hue-rotate(120deg) invert(1);
+            opacity: 0.6; pointer-events: none;
         }
 
-        h2 { 
-            font-family: 'Orbitron'; font-size: 0.55rem; color: var(--neon); 
-            margin: 0 0 8px 0; border-left: 2px solid var(--neon); padding-left: 5px;
-            text-transform: uppercase; letter-spacing: 1px;
+        /* --- BUTTONS --- */
+        .btn {
+            width: 100%; padding: 12px; margin-bottom: 5px;
+            background: transparent; border: 1px solid var(--border);
+            color: #fff; font-family: 'Orbitron'; font-size: 0.6rem;
+            text-transform: uppercase; transition: 0.2s;
         }
+        .btn:hover { background: var(--neon); color: #000; font-weight: bold; }
+        .btn-kill { border-color: var(--blood); color: var(--blood); }
+        .btn-kill:hover { background: var(--blood); color: #fff; }
 
-        /* --- LAYOUT GRID --- */
-        .weather-map { grid-column: span 5; grid-row: span 6; padding: 0; }
-        .market { grid-column: span 4; grid-row: span 6; }
-        .ops-control { grid-column: span 3; grid-row: span 6; }
-        .cyber { grid-column: span 3; grid-row: span 3; }
-        .radar { grid-column: span 3; grid-row: span 3; }
-        .news { grid-column: span 6; grid-row: span 3; }
-        .status-strip { grid-column: span 12; grid-row: span 2; display: flex; gap: 8px; }
+        /* --- DATA VISUALS --- */
+        .big-num { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; }
+        .unit { font-size: 0.5rem; color: var(--border); }
 
-        /* WEATHER MAP STYLING */
-        #map-frame {
-            width: 100%; height: 100%; border: none;
-            filter: invert(1) hue-rotate(80deg) brightness(0.8) contrast(1.2);
-            pointer-events: none;
-        }
-
-        /* RADAR ANIMATION */
-        .radar-box {
-            width: 80px; height: 80px; border: 1px solid var(--neon); border-radius: 50%;
-            margin: auto; position: relative;
-        }
-        .radar-box::after {
-            content: ""; position: absolute; width: 100%; height: 100%;
-            background: conic-gradient(from 0deg, var(--neon), transparent);
-            border-radius: 50%; animation: sweep 3s linear infinite;
-        }
-        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* BOTTONI CRITICI */
-        .btn-shutdown {
-            background: #220000; border: 1px solid var(--panic); color: var(--panic);
-            width: 100%; padding: 10px; font-family: 'Orbitron'; font-weight: 900;
-            margin-top: 10px; cursor: pointer; transition: 0.2s;
-        }
-        .btn-shutdown:hover { background: var(--panic); color: white; box-shadow: 0 0 20px var(--panic); }
-
-        .stat-card { background: rgba(255,255,255,0.03); flex: 1; padding: 10px; border: 1px solid var(--border); }
-        .data-big { font-size: 1.1rem; color: var(--neon); font-weight: bold; }
     </style>
 </head>
-<body id="ui-body">
+<body id="master-ui">
 
     <header>
-        <div style="font-family: 'Orbitron'; color: var(--warning);">SYS: <span id="uptime">ONLINE</span></div>
-        <div style="text-align: center; font-family: 'Orbitron'; letter-spacing: 12px;">ZENITH V.4.0</div>
-        <div id="clock" style="text-align: right;">00:00:00</div>
+        <div class="logo">ZENITH <span style="color:white">X</span></div>
+        <div id="quantum-clock" style="color: var(--cyan); font-weight: bold;">00:00:00:000</div>
+        <div style="font-size: 0.6rem; border: 1px solid var(--blood); padding: 2px 10px; color: var(--blood);">DEFCON 1: MAXIMUM ALERT</div>
     </header>
 
-    <div class="main-grid">
-        <div class="module weather-map">
-            <h2>Satellite Weather // Global Radar</h2>
-            <iframe id="map-frame" src="https://www.openstreetmap.org/export/embed.html?bbox=7.0,43.0,12.0,47.0&layer=mapnik"></iframe>
-            <div style="position: absolute; bottom: 10px; left: 10px; background: #000; padding: 5px; font-size: 0.5rem; border: 1px solid var(--neon);">
-                COORD: 45.46°N | 9.19°E
+    <div class="omni-grid">
+        
+        <div class="module m-wealth">
+            <h2>Global Hegemony Assets</h2>
+            <div class="asset-row"><span>LIQUIDITY</span><span class="val-gold">1.42 Quadrillion €</span></div>
+            <div class="asset-row"><span>GOLD RESERVES</span><span class="val-gold">850.000 T</span></div>
+            <div class="asset-row"><span>ENERGY NODES</span><span style="color:var(--neon)">98.2% ACTIVE</span></div>
+            <canvas id="wealthChart" style="margin-top: 15px;"></canvas>
+        </div>
+
+        <div class="module m-map">
+            <h2>Tactical Intelligence Map</h2>
+            <iframe id="topo-map" src="https://www.openstreetmap.org/export/embed.html?bbox=-180,-85,180,85&layer=cyclemap"></iframe>
+            <div style="position: absolute; top: 20px; right: 20px; text-align: right; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--cyan);">
+                <div style="color:var(--cyan)">SATELLITE SYNC: OK</div>
+                <div style="font-size: 0.5rem;">TARGET: 45°27'51"N 9°11'22"E</div>
             </div>
         </div>
 
-        <div class="module market">
-            <h2>Hegemony Assets</h2>
-            <div style="font-size: 1.5rem; color: #fff;">$ 96,284.10 <span style="font-size: 0.6rem; color: var(--neon);">+2.1%</span></div>
-            <canvas id="miniChart" height="150"></canvas>
-            <div style="margin-top: 10px; font-size: 0.5rem; color: var(--cyan);">
-                > SYNCING WITH TOKYO EXCHANGE... DONE
+        <div class="module m-chat">
+            <h2>Neural Link [ENCRYPTED]</h2>
+            <div id="neural-chat"></div>
+        </div>
+
+        <div class="module m-status">
+            <h2>Core Biometrics</h2>
+            <div style="margin-bottom: 15px;">
+                <div class="unit">NEURAL LOAD</div>
+                <div class="big-num">14.4 <span style="font-size: 0.8rem">THz</span></div>
             </div>
-        </div>
-
-        <div class="module ops-control">
-            <h2>System Power</h2>
-            <div class="stat-card">
-                <div>GRID STATUS</div>
-                <div class="data-big">OPTIMAL</div>
+            <div style="margin-bottom: 15px;">
+                <div class="unit">GLOBAL UPLINK</div>
+                <div class="big-num" style="color:var(--neon)">99.9<span style="font-size: 0.8rem">%</span></div>
             </div>
-            <button class="btn-shutdown" onclick="killServer()">OFFLINE SERVER</button>
-            <button class="btn-shutdown" style="border-color: var(--warning); color: var(--warning); background: #221100; margin-top: 5px;" onclick="location.href='https://google.com'">GHOST MODE</button>
+            <div class="unit">ATMOSPHERIC PRESSURE</div>
+            <div class="big-num">1013 <span style="font-size: 0.8rem">hPa</span></div>
         </div>
 
-        <div class="module cyber">
-            <h2>Infiltration Log</h2>
-            <div id="terminal-log" style="font-size: 0.5rem; color: var(--cyan);"></div>
+        <div class="module m-intel">
+            <h2>Deep Web Intelligence Feed</h2>
+            <marquee direction="up" scrollamount="1" style="height: 100px; color: var(--gold); font-size: 0.6rem;">
+                > INTERCEPTED: Signal from Mars Colony Alpha - Status Green<br><br>
+                > CRYPTO: Bitcoin hard-fork protocol initiated by Zenith AI<br><br>
+                > GEOPOLITICS: Energy grid in sector 4 shifted to Zenith Core<br><br>
+                > SECURITY: Firewall blocked 4.2 million attacks in 0.4 seconds
+            </marquee>
         </div>
 
-        <div class="module radar">
-            <h2>Object Tracking</h2>
-            <div class="radar-box"></div>
+        <div class="module m-control">
+            <h2>Command Protocol</h2>
+            <button class="btn">ACTIVATE DRONE FLEET</button>
+            <button class="btn">FREEZE GLOBAL ASSETS</button>
+            <button class="btn">SILENCE MEDIA</button>
+            <button class="btn btn-kill" onclick="killEverything()">SHUTDOWN GLOBAL SERVER</button>
+            <div style="margin-top: 10px; font-size: 0.5rem; text-align: center; color: var(--blood);">DANGER: EXECUTING SHUTDOWN WILL COLLAPSE THE GRID</div>
         </div>
 
-        <div class="module news">
-            <h2>Global Intel</h2>
-            <marquee scrollamount="3" style="color: var(--gold);">*** BREAKING: GLOBAL LIQUIDITY SPIKE DETECTED *** SATELLITE 04 RE-POSITIONED OVER SECTOR 7G ***</marquee>
-            <div style="opacity: 0.6; margin-top: 5px;">> AI Summary: Markets reacting to tech surge. No threats detected in 500mi radius.</div>
-        </div>
-
-        <div class="status-strip">
-            <div class="stat-card"><h2>CORE TEMP</h2><div class="data-big">32°C</div></div>
-            <div class="stat-card"><h2>MEMORY</h2><div class="data-big">1.2 TB/s</div></div>
-            <div class="stat-card"><h2>GEO-LOCK</h2><div class="data-big">ACTIVE</div></div>
-            <div class="stat-card"><h2>SIGNAL</h2><div class="data-big">MAX</div></div>
-        </div>
     </div>
 
     <script>
-        // Orologio
+        // Orologio Quantistico
         setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT');
-        }, 1000);
+            const now = new Date();
+            const ms = String(now.getMilliseconds()).padStart(3, '0');
+            document.getElementById('quantum-clock').innerText = now.toLocaleTimeString('it-IT') + ":" + ms;
+        }, 1);
 
-        // Funzione Spegnimento Server (Sequenza di distruzione)
-        function killServer() {
-            if(confirm("CONFERMA SPEGNIMENTO TOTALE? (I dati non salvati andranno persi)")) {
-                const body = document.getElementById('ui-body');
-                let logs = document.getElementById('terminal-log');
-                
-                // Fase 1: Log di errore
-                logs.innerHTML = "<span style='color:red'>> TERMINATING ALL NODES...</span><br>" + logs.innerHTML;
-                
-                setTimeout(() => {
-                    // Fase 2: Distorsione visiva
-                    body.style.filter = "invert(1) contrast(5) blur(2px)";
-                    document.body.innerHTML += "<div style='position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); color:red; font-size:5rem; font-family:Orbitron; z-index:9999;'>OFFLINE</div>";
-                }, 1000);
-
-                setTimeout(() => {
-                    // Fase 3: Nero totale
-                    body.classList.add('shutdown-active');
-                    console.log("Server Terminated.");
-                }, 2500);
-            }
-        }
-
-        // Terminal Log simulato
-        const logBox = document.getElementById('terminal-log');
-        const msgs = ["ENCRYPTING...", "HASH: 0x82f...", "SIGNAL STABLE", "UPLINK RE-ROUTE"];
+        // Neural Chat Simulato
+        const chat = document.getElementById('neural-chat');
+        const messages = [
+            "COMM: Unknown signal detected in Antarctica.",
+            "CORE: All markets under Zenith control.",
+            "USER: Status report on Project X?",
+            "CORE: Project X is 100% stable.",
+            "ALERT: Global liquidity redirected."
+        ];
         setInterval(() => {
-            const d = document.createElement('div');
-            d.innerText = `> ${msgs[Math.floor(Math.random()*msgs.length)]}`;
-            logBox.prepend(d);
-            if(logBox.childNodes.length > 6) logBox.removeChild(logBox.lastChild);
-        }, 2000);
+            const m = document.createElement('div');
+            m.className = 'msg';
+            m.innerText = `> ${messages[Math.floor(Math.random()*messages.length)]}`;
+            chat.prepend(m);
+            if(chat.childNodes.length > 10) chat.removeChild(chat.lastChild);
+        }, 3000);
 
-        // Chart
-        const ctx = document.getElementById('miniChart').getContext('2d');
+        // Wealth Chart
+        const ctx = document.getElementById('wealthChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: Array(15).fill(''),
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
                 datasets: [{
-                    data: [50, 45, 60, 55, 70, 65, 80, 75, 90, 85, 100, 110, 105, 120, 130],
-                    borderColor: '#00ff9d',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    fill: true,
-                    backgroundColor: 'rgba(0,255,157,0.1)'
+                    label: 'Quadrillion €',
+                    data: [1.1, 1.3, 1.2, 1.42],
+                    backgroundColor: '#00ff9d'
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {x:{display:false}, y:{display:false}} }
+            options: { responsive: true, plugins: {legend: {display: false}}, scales: {y: {ticks: {color: '#555'}}, x: {ticks: {color: '#555'}}} }
         });
+
+        // SHUTDOWN GLOBALE
+        function killEverything() {
+            if(confirm("SEI SICURO? IL MONDO ANDRÀ OFFLINE.")) {
+                document.body.classList.add('kill-sequence');
+                setTimeout(() => {
+                    document.body.innerHTML = `
+                        <div style="background:#000; color:#f00; height:100vh; display:flex; align-items:center; justify-content:center; font-family:Orbitron; font-size:3rem; text-align:center;">
+                            GLOBAL SYSTEM TERMINATED<br><br>
+                            <span style="font-size:1rem; color:white;">ZENITH OMNIPOTENCE HAS LEFT THE BUILDING</span>
+                        </div>
+                    `;
+                }, 2000);
+            }
+        }
     </script>
 </body>
 </html>
