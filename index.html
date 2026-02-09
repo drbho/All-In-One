@@ -1,268 +1,283 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>DevHub | Native Tools Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub OS | Ultimate Developer Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --accent-hover: #0ea5e9;
-            --text: #f8fafc;
-            --text-dim: #94a3b8;
-            --border: #334155;
-            --modal-bg: rgba(15, 23, 42, 0.9);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-        header { text-align: center; padding: 80px 0 40px; }
-        h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin-bottom: 10px; }
-        h1 span { color: var(--accent); text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
-
-        /* Search */
-        .search-wrapper { position: sticky; top: 20px; z-index: 100; text-align: center; margin-bottom: 50px; }
-        #searchInput {
-            width: 100%; max-width: 600px;
-            padding: 18px 30px;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            color: white;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            outline: none; transition: 0.3s;
-        }
-        #searchInput:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
-
-        /* Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent);
-            background: #243147;
-        }
-        .card h3 { margin-bottom: 12px; font-size: 1.4rem; color: var(--accent); }
-        .card p { font-size: 0.95rem; color: var(--text-dim); }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-bg);
-            backdrop-filter: blur(15px);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            width: 100%; max-width: 900px;
-            max-height: 90vh;
-            border-radius: 28px;
-            border: 1px solid var(--border);
-            padding: 40px;
-            position: relative;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .close-modal {
-            position: absolute; top: 25px; right: 25px;
-            background: #334155; border: none; color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        }
-        .close-modal:hover { background: #ef4444; }
-
-        /* Tools UI */
-        .tool-layout { display: flex; flex-direction: column; gap: 20px; }
-        .flex-row { display: flex; gap: 20px; }
-        textarea, .preview-box {
-            width: 100%; min-height: 250px;
-            background: #0f172a; border: 1px solid var(--border);
-            border-radius: 15px; color: #e2e8f0;
-            padding: 20px; font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem; resize: vertical;
-        }
-        .preview-box { background: #1e293b; overflow-y: auto; border-left: 4px solid var(--accent); }
-        
-        .action-btn {
-            padding: 14px 28px; background: var(--accent);
-            border: none; border-radius: 12px; font-weight: 700;
-            color: #0f172a; cursor: pointer; transition: 0.2s;
-        }
-        .action-btn:hover { background: var(--accent-hover); transform: scale(1.02); }
-
-        #qrcode { background: white; padding: 20px; border-radius: 10px; display: inline-block; margin: 20px 0; }
-
-        @media (max-width: 768px) {
-            .flex-row { flex-direction: column; }
-            h1 { font-size: 2.5rem; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        :root { --accent: #10b981; --bg: #030712; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f1f5f9; scroll-behavior: smooth; overflow-x: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-item { @apply flex items-center justify-center w-12 h-12 rounded-xl transition-all text-slate-400 hover:bg-emerald-500/10 hover:text-emerald-500; }
+        .sidebar-active { @apply bg-emerald-500/20 text-emerald-500 border border-emerald-500/30; }
+        .tool-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tool-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2); }
+        textarea, input, select { background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; outline: none; color: white; }
+        textarea:focus, input:focus { border-color: var(--accent) !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-in { animation: slideUp 0.4s ease-out forwards; }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-    <div class="container">
-        <header>
-            <h1>Dev<span>Hub</span> Native</h1>
-            <p style="color: var(--text-dim); font-size: 1.2rem;">L'officina completa, direttamente nel tuo browser.</p>
+    <div id="toast" class="fixed bottom-24 md:bottom-10 right-1/2 translate-x-1/2 md:translate-x-0 md:right-10 z-[3000] flex items-center bg-emerald-500 text-black px-6 py-3 rounded-2xl font-bold shadow-2xl translate-y-32 transition-transform duration-500">
+        <span id="toastMsg">Copiato!</span>
+    </div>
+
+    <div id="cmdPalette" class="fixed inset-0 z-[2000] bg-black/80 backdrop-blur-sm hidden flex-col items-center pt-[10vh] px-4">
+        <div class="glass w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <div class="flex items-center p-6 border-b border-white/5">
+                <i data-lucide="search" class="w-6 h-6 text-emerald-500 mr-4"></i>
+                <input type="text" id="cmdInput" class="bg-transparent w-full outline-none text-xl placeholder-slate-600" placeholder="Cerca un tool (es. 'JWT', 'Color', 'CSS')...">
+            </div>
+            <div id="cmdResults" class="max-h-[50vh] overflow-y-auto p-4 space-y-2"></div>
+        </div>
+        <div class="mt-4 text-slate-500 text-sm">Premi <kbd class="bg-white/10 px-2 py-1 rounded">ESC</kbd> per chiudere</div>
+    </div>
+
+    <aside class="fixed left-0 top-0 h-full w-20 glass flex flex-col items-center py-8 space-y-8 z-50 
+        max-lg:w-full max-lg:h-20 max-lg:flex-row max-lg:bottom-0 max-lg:top-auto max-lg:justify-around max-lg:px-6 max-lg:rounded-t-[2.5rem] max-lg:border-t-emerald-500/20">
+        <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-black font-black shadow-lg shadow-emerald-500/20 max-lg:hidden">DH</div>
+        <nav class="flex flex-col space-y-6 max-lg:flex-row max-lg:space-y-0 max-lg:space-x-8">
+            <button onclick="showSection('grid')" class="sidebar-item sidebar-active" id="nav-grid" title="Dashboard"><i data-lucide="layout-grid"></i></button>
+            <button onclick="showSection('favs')" class="sidebar-item" id="nav-favs" title="Preferiti"><i data-lucide="star"></i></button>
+            <button onclick="togglePalette()" class="sidebar-item" title="Cerca"><i data-lucide="search"></i></button>
+            <button onclick="location.reload()" class="sidebar-item max-lg:hidden"><i data-lucide="refresh-cw"></i></button>
+        </nav>
+        <div class="mt-auto max-lg:hidden">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mx-auto"></div>
+        </div>
+    </aside>
+
+    <main class="pl-24 pr-8 pt-12 pb-32 max-lg:pl-8 max-lg:pt-8">
+        <header id="mainHeader" class="flex justify-between items-end mb-16 max-md:flex-col max-md:items-start max-md:gap-6">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">v2.0 Stable</span>
+                </div>
+                <h1 class="text-6xl font-extrabold tracking-tighter max-md:text-4xl">DevHub <span class="text-emerald-500 text-glow">OS</span></h1>
+                <p class="text-slate-500 font-medium mt-2">Strumenti di engineering 100% client-side. <span class="text-white/40 italic">Nessun dato lascia il tuo browser.</span></p>
+            </div>
+            <div class="flex gap-4">
+                <div class="glass px-6 py-3 rounded-2xl flex flex-col items-center">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Latency</span>
+                    <span class="text-emerald-500 font-mono text-xl">0ms</span>
+                </div>
+            </div>
         </header>
 
-        <div class="search-wrapper">
-            <input type="text" id="searchInput" placeholder="Cerca uno strumento (es. QR, JSON, Password)...">
-        </div>
+        <section id="section-grid" class="space-y-12">
+            <div class="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+                <button onclick="filterTools('all')" class="cat-btn bg-emerald-500 text-black px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Tutti</button>
+                <button onclick="filterTools('Dev')" class="cat-btn glass px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Development</button>
+                <button onclick="filterTools('Security')" class="cat-btn glass px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Security</button>
+                <button onclick="filterTools('Encoding')" class="cat-btn glass px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Encoding</button>
+                <button onclick="filterTools('Generator')" class="cat-btn glass px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Generators</button>
+                <button onclick="filterTools('Text')" class="cat-btn glass px-6 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">Text & Content</button>
+            </div>
 
-        <div class="grid" id="toolsGrid">
-            <div class="card" onclick="openTool('qr')">
-                <h3>QR Code Generator</h3>
-                <p>Crea codici QR istantanei per URL o testi. Privato e veloce.</p>
-            </div>
-            <div class="card" onclick="openTool('md')">
-                <h3>Markdown Live</h3>
-                <p>Scrivi in Markdown e visualizza l'anteprima HTML in tempo reale.</p>
-            </div>
-            <div class="card" onclick="openTool('json')">
-                <h3>JSON Formatter</h3>
-                <p>Formatta e valida i tuoi oggetti JSON con indentazione pulita.</p>
-            </div>
-            <div class="card" onclick="openTool('password')">
-                <h3>Secure Pass</h3>
-                <p>Genera chiavi d'accesso ad alta entropia localmente.</p>
-            </div>
-        </div>
-    </div>
+            <div id="mainGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in"></div>
+        </section>
 
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeTool()">✕</button>
-            <div id="toolInterface"></div>
-        </div>
-    </div>
+        <section id="section-tool" class="hidden max-w-6xl mx-auto">
+            <button onclick="showSection('grid')" class="flex items-center text-slate-500 hover:text-white mb-10 transition group text-sm font-bold uppercase tracking-widest">
+                <i data-lucide="chevron-left" class="mr-2 group-hover:-translate-x-1 transition"></i> Torna alla Dashboard
+            </button>
+            <div id="toolHeader" class="mb-12"></div>
+            <div id="toolWorkspace" class="glass rounded-[3rem] p-6 md:p-12 shadow-2xl border border-white/10"></div>
+        </section>
+    </main>
 
     <script>
-        const toolInterface = document.getElementById('toolInterface');
-        const modalOverlay = document.getElementById('modalOverlay');
+        // --- TOOL DATABASE ---
+        const tools = [
+            { id: 'json', title: 'JSON Formatter', cat: 'Dev', icon: 'code-2', desc: 'Validazione e formattazione istantanea con indentazione personalizzabile.' },
+            { id: 'jwt', title: 'JWT Debugger', cat: 'Security', icon: 'shield-check', desc: 'Decodifica Header e Payload di JSON Web Tokens localmente.' },
+            { id: 'base64', title: 'Base64 Tool', cat: 'Encoding', icon: 'binary', desc: 'Codifica e decodifica stringhe o file in formato Base64.' },
+            { id: 'qr', title: 'QR Architect', cat: 'Generator', icon: 'qr-code', desc: 'Genera codici QR ad alta risoluzione per URL e testi.' },
+            { id: 'pass', title: 'Secret Generator', cat: 'Generator', icon: 'key', desc: 'Password ultra-sicure basate su entropia crittografica.' },
+            { id: 'hash', title: 'Hash Engine', cat: 'Security', icon: 'lock', desc: 'Genera hash SHA-256, MD5 e SHA-512 in tempo reale.' },
+            { id: 'diff', title: 'Diff Checker', cat: 'Dev', icon: 'git-compare', desc: 'Compara due blocchi di testo e trova le differenze.' },
+            { id: 'unit', title: 'CSS Converter', cat: 'Dev', icon: 'ruler', desc: 'Conversione dinamica tra PX, REM, EM e Viewport Units.' },
+            { id: 'case', title: 'Case Swapper', cat: 'Text', icon: 'type', desc: 'Trasforma testo in camelCase, snake_case, PascalCase.' },
+            { id: 'unix', title: 'Unix Epoch', cat: 'Dev', icon: 'clock', desc: 'Converte timestamp Unix in date leggibili e viceversa.' },
+            { id: 'lorem', title: 'Lorem Ipsum', cat: 'Text', icon: 'align-left', desc: 'Generatore di testi segnaposto per mockup e layout.' },
+            { id: 'color', title: 'Color Wheel', cat: 'Dev', icon: 'palette', desc: 'Convertitore tra HEX, RGB e HSL con anteprima.' }
+        ];
 
-        const tools = {
-            qr: {
-                render: () => `
-                    <div class="tool-layout">
-                        <h2>Generatore QR Code</h2>
-                        <input type="text" id="qrInput" class="preview-box" style="min-height:auto" placeholder="Inserisci URL o testo..." oninput="genQR()">
-                        <div style="text-align:center"><div id="qrcode"></div></div>
-                        <p style="color:var(--text-dim)">Il codice si aggiorna mentre scrivi.</p>
-                    </div>
-                `
-            },
-            md: {
-                render: () => `
-                    <div class="tool-layout">
-                        <h2>Markdown Previewer</h2>
-                        <div class="flex-row">
-                            <textarea id="mdInput" placeholder="# Ciao mondo\nScrivi qui..." oninput="renderMD()"></textarea>
-                            <div id="mdPreview" class="preview-box">Anteprima...</div>
-                        </div>
-                    </div>
-                `
-            },
-            json: {
-                render: () => `
-                    <div class="tool-layout">
-                        <h2>JSON Formatter</h2>
-                        <textarea id="jsonInput" placeholder='{"key":"value"}'></textarea>
-                        <button class="action-btn" onclick="runJson()">Formatta Codice</button>
-                    </div>
-                `
-            },
-            password: {
-                render: () => `
-                    <div class="tool-layout" style="text-align:center">
-                        <h2>Secure Password Generator</h2>
-                        <div id="passResult" class="preview-box" style="font-size:2rem; min-height:auto; margin:20px 0">********</div>
-                        <button class="action-btn" onclick="runPass()">Genera Password Sicura</button>
-                    </div>
-                `
+        let favorites = JSON.parse(localStorage.getItem('dh_favs') || '[]');
+        let currentCat = 'all';
+
+        // --- CORE INITIALIZATION ---
+        function init() {
+            lucide.createIcons();
+            renderGrid(tools);
+            setupCommandPalette();
+            
+            window.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); togglePalette(); }
+                if (e.key === 'Escape') closePalette();
+            });
+        }
+
+        // --- UI RENDERING ---
+        function renderGrid(list) {
+            const grid = document.getElementById('mainGrid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center opacity-30 font-bold uppercase tracking-[0.3em]">Nessun tool trovato</div>`;
+                return;
             }
+            grid.innerHTML = list.map(t => `
+                <div onclick="openTool('${t.id}')" class="tool-card glass p-8 rounded-[2.5rem] cursor-pointer group relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="p-4 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500">
+                            <i data-lucide="${t.icon}"></i>
+                        </div>
+                        <button onclick="event.stopPropagation(); toggleFav('${t.id}')" class="p-2 hover:scale-125 transition">
+                            <i data-lucide="star" class="w-5 h-5 ${favorites.includes(t.id) ? 'fill-yellow-500 text-yellow-500' : 'text-slate-700'}"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-2xl font-extrabold mb-3 tracking-tight">${t.title}</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-8">${t.desc}</p>
+                    <div class="flex items-center text-[10px] font-black uppercase tracking-widest text-emerald-500/50">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> ${t.cat}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function showSection(id) {
+            const isTool = id === 'tool';
+            document.getElementById('section-grid').classList.toggle('hidden', isTool);
+            document.getElementById('section-tool').classList.toggle('hidden', !isTool);
+            document.getElementById('mainHeader').classList.toggle('hidden', isTool);
+            
+            if(id === 'favs') renderGrid(tools.filter(t => favorites.includes(t.id)));
+            else if(id === 'grid') renderGrid(tools);
+
+            document.querySelectorAll('.sidebar-item').forEach(btn => btn.classList.remove('sidebar-active'));
+            const activeId = (id === 'favs' || id === 'grid') ? 'nav-'+id : 'nav-grid';
+            document.getElementById(activeId).classList.add('sidebar-active');
+            window.scrollTo(0,0);
+        }
+
+        function openTool(id) {
+            const tool = tools.find(t => t.id === id);
+            if(!tool) return;
+            
+            showSection('tool');
+            document.getElementById('toolHeader').innerHTML = `
+                <div class="flex items-center gap-6 animate-in">
+                    <div class="p-5 bg-emerald-500 text-black rounded-3xl shadow-xl shadow-emerald-500/20"><i data-lucide="${tool.icon}" class="w-8 h-8"></i></div>
+                    <div>
+                        <h2 class="text-5xl font-black tracking-tighter">${tool.title}</h2>
+                        <p class="text-emerald-500 uppercase text-[10px] font-black tracking-[0.2em] mt-2">${tool.cat} • Offline Core</p>
+                    </div>
+                </div>`;
+            
+            renderWorkspace(id);
+            lucide.createIcons();
+        }
+
+        // --- WORKSPACE LOGIC ---
+        function renderWorkspace(id) {
+            const ws = document.getElementById('toolWorkspace');
+            const inputClass = "w-full bg-slate-950/50 border border-white/10 rounded-2xl p-6 font-mono text-sm focus:border-emerald-500 transition-all focus:ring-1 focus:ring-emerald-500";
+            
+            const layouts = {
+                json: `
+                    <div class="grid gap-6">
+                        <textarea id="tIn" class="${inputClass} h-80" placeholder="Incolla JSON..."></textarea>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="runJson(true)" class="bg-emerald-500 text-black px-8 py-4 rounded-2xl font-bold hover:scale-105 transition">Beautify JSON</button>
+                            <button onclick="runJson(false)" class="bg-white/5 text-white px-8 py-4 rounded-2xl font-bold hover:bg-white/10 transition">Minify JSON</button>
+                            <button onclick="copyToClipboard(document.getElementById('tIn').value)" class="bg-white/5 text-white px-6 py-4 rounded-2xl transition"><i data-lucide="copy"></i></button>
+                        </div>
+                    </div>`,
+                jwt: `
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-4 uppercase tracking-widest">Encoded Token</label>
+                            <textarea id="tIn" oninput="runJwt()" class="${inputClass} h-96 border-emerald-500/20" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 mb-4 uppercase tracking-widest">Decoded Payload</label>
+                            <div id="tOut" class="${inputClass} h-96 overflow-auto text-emerald-400 bg-emerald-500/5 border-emerald-500/10">In attesa di token...</div>
+                        </div>
+                    </div>`,
+                hash: `
+                    <div class="max-w-2xl mx-auto space-y-6">
+                        <textarea id="tIn" oninput="runHash()" class="${inputClass} h-32" placeholder="Inserisci il testo da hashare..."></textarea>
+                        <div class="space-y-4">
+                            ${['SHA256', 'MD5', 'SHA512'].map(h => `
+                                <div class="glass p-4 rounded-2xl">
+                                    <div class="text-[10px] font-black text-slate-500 uppercase mb-2">${h}</div>
+                                    <div id="out-${h}" class="font-mono text-emerald-500 break-all text-xs">-</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`,
+                unit: `
+                    <div class="max-w-md mx-auto grid grid-cols-2 gap-6 py-10">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500">Pixels (px)</label>
+                            <input type="number" id="vPx" oninput="runUnit('px')" class="${inputClass} text-center text-xl" value="16">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500">REM</label>
+                            <input type="number" id="vRem" oninput="runUnit('rem')" class="${inputClass} text-center text-xl" value="1">
+                        </div>
+                        <p class="col-span-2 text-center text-slate-600 text-xs italic">Basato su base 16px</p>
+                    </div>`,
+                pass: `
+                    <div class="max-w-xl mx-auto text-center space-y-8 py-10">
+                        <div id="tOut" class="text-3xl md:text-5xl font-mono font-black text-emerald-500 tracking-wider py-12 glass rounded-[2.5rem] border-emerald-500/20 shadow-inner">********</div>
+                        <div class="flex gap-4">
+                            <button onclick="runPass()" class="flex-1 bg-emerald-500 text-black py-5 rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-emerald-500/20 transition">Genera Nuova</button>
+                            <button onclick="copyToClipboard(document.getElementById('tOut').innerText)" class="bg-white/10 px-10 rounded-2xl hover:bg-white/20 transition"><i data-lucide="copy"></i></button>
+                        </div>
+                    </div>`,
+                qr: `
+                    <div class="flex flex-col items-center gap-10 py-6">
+                        <input type="text" id="tIn" oninput="runQr(this.value)" class="${inputClass} max-w-xl text-center text-xl" placeholder="URL o testo per il QR...">
+                        <div class="p-10 bg-white rounded-[3rem] shadow-2xl" id="qrOut"></div>
+                    </div>`,
+                diff: `
+                    <div class="grid lg:grid-cols-2 gap-4">
+                        <textarea id="diff1" class="${inputClass} h-64" placeholder="Testo originale..."></textarea>
+                        <textarea id="diff2" class="${inputClass} h-64" placeholder="Testo modificato..."></textarea>
+                        <button onclick="runDiff()" class="lg:col-span-2 bg-emerald-500 text-black py-4 rounded-2xl font-bold">Compara Testi</button>
+                        <div id="tOut" class="lg:col-span-2 p-6 glass rounded-2xl font-mono text-sm whitespace-pre-wrap"></div>
+                    </div>`
+            };
+
+            ws.innerHTML = layouts[id] || `<div class="flex flex-col items-center justify-center py-20 opacity-20"><i data-lucide="construction" class="w-20 h-20 mb-4"></i><p class="font-black uppercase tracking-widest">Modulo in Sviluppo</p></div>`;
+            if(id === 'pass') runPass();
+            if(id === 'unit') runUnit('px');
+        }
+
+        // --- ENGINE FUNCTIONS ---
+        window.runJson = (pretty) => {
+            const el = document.getElementById('tIn');
+            try { 
+                const obj = JSON.parse(el.value);
+                el.value = JSON.stringify(obj, null, pretty ? 4 : 0);
+                toast("JSON Elaborato");
+            } catch(e) { toast("Errore: JSON non valido", true); }
         };
 
-        // --- Logica Tool ---
-        
-        // QR Code
-        function genQR() {
-            const val = document.getElementById('qrInput').value;
-            const container = document.getElementById('qrcode');
-            container.innerHTML = "";
-            if(val) {
-                new QRCode(container, { text: val, width: 200, height: 200, colorDark: "#0f172a" });
-            }
-        }
-
-        // Markdown (Semplificato per demo)
-        function renderMD() {
-            const val = document.getElementById('mdInput').value;
-            const preview = document.getElementById('mdPreview');
-            // Nota: Per un MD completo useresti una libreria come 'marked'. 
-            // Qui simuliamo i titoli per mostrare la reattività.
-            let html = val.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                          .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>');
-            preview.innerHTML = html || "Anteprima...";
-        }
-
-        // JSON
-        function runJson() {
-            const el = document.getElementById('jsonInput');
+        window.runJwt = () => {
+            const val = document.getElementById('tIn').value.trim();
+            const out = document.getElementById('tOut');
             try {
-                el.value = JSON.stringify(JSON.parse(el.value), null, 4);
-            } catch(e) { alert("Errore: JSON non valido"); }
-        }
-
-        // Password
-        function runPass() {
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-            const pass = Array.from(crypto.getRandomValues(new Uint32Array(16)))
-                              .map(x => chars[x % chars.length]).join('');
-            document.getElementById('passResult').innerText = pass;
-        }
-
-        // --- Gestione UI ---
-        function openTool(id) {
-            toolInterface.innerHTML = tools[id].render();
-            modalOverlay.style.display = 'flex';
-            if(id === 'qr') setTimeout(genQR, 100); // Trigger iniziale
-        }
-
-        function closeTool() { modalOverlay.style.display = 'none'; }
-
-        // Ricerca Card
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.card').forEach(card => {
-                const text = card.innerText.toLowerCase();
-                card.style.display = text.includes(term) ? 'block' : 'none';
-            });
-        });
-    </script>
-</body>
-</html>
+                const parts = val.split('.');
+                if(parts.length < 2) throw "Incompleto";
+                const base64 = 
