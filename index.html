@@ -1,275 +1,291 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENITH | OMNIPOTENCE OS</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100;400&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dev Tools Hub - All-in-One</title>
     <style>
         :root {
-            --neon: #00ff9d; --blood: #ff0044; --gold: #d4af37; --cyan: #00f2ff;
-            --bg: #000000; --glass: rgba(5, 5, 5, 0.95); --border: rgba(0, 255, 157, 0.3);
+            --bg: #0d0d0d;
+            --card-bg: #141414;
+            --text: #e0e0e0;
+            --accent: #00ff9d;
+            --accent-glow: rgba(0, 255, 157, 0.2);
+            --border: #333;
         }
-
-        * { box-sizing: border-box; cursor: crosshair; outline: none; }
+        body.light {
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #006633;
+            --accent-glow: rgba(0, 102, 51, 0.15);
+            --border: #ddd;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace;
-            margin: 0; padding: 5px; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.4s, color 0.4s;
         }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-5px, 5px); }
-            40% { transform: translate(-5px, -5px); filter: hue-rotate(90deg); }
-            60% { transform: translate(5px, 5px); }
-            80% { transform: translate(5px, -5px); }
-            100% { transform: translate(0); }
-        }
-
-        .kill-sequence { animation: glitch 0.1s infinite; filter: invert(1); background: white !important; }
-
         header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 20px; border: 1px solid var(--border);
-            background: linear-gradient(90deg, #000, #051a10, #000);
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.1); margin-bottom: 5px;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        h1 {
+            font-size: 3rem;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent-glow);
+            margin-bottom: 0.5rem;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        #searchInput {
+            padding: 12px 16px;
+            width: 320px;
+            max-width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        #themeToggle {
+            padding: 10px 18px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .section {
+            margin: 2.5rem 0;
+        }
+        .section h2 {
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem;
+            border-left: 5px solid var(--accent);
+            padding-left: 12px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.4rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px var(--accent-glow);
+        }
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 0.6rem;
+            font-size: 1.25rem;
+        }
+        .card p {
+            color: #aaa;
+            font-size: 0.94rem;
+            line-height: 1.45;
+        }
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            color: #666;
+            font-size: 0.9rem;
         }
 
-        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 15px; font-size: 1.2rem; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
-
-        .omni-grid {
-            display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr);
-            gap: 5px; flex-grow: 1;
+        @media (max-width: 600px) {
+            h1 { font-size: 2.3rem; }
+            .controls { flex-direction: column; align-items: center; }
         }
-
-        .module {
-            background: var(--glass); border: 1px solid var(--border);
-            padding: 10px; position: relative; transition: 0.3s;
-        }
-        .module:hover { border-color: var(--neon); box-shadow: inset 0 0 15px rgba(0, 255, 157, 0.1); }
-
-        .m-wealth { grid-column: span 3; grid-row: span 5; }
-        .m-map { grid-column: span 6; grid-row: span 8; border: 2px solid var(--cyan); }
-        .m-chat { grid-column: span 3; grid-row: span 5; }
-        .m-status { grid-column: span 3; grid-row: span 7; }
-        .m-intel { grid-column: span 6; grid-row: span 4; }
-        .m-control { grid-column: span 3; grid-row: span 7; }
-
-        .asset-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .val-gold { color: var(--gold); font-weight: bold; }
-
-        #neural-chat { font-size: 0.65rem; height: 85%; overflow-y: auto; color: var(--cyan); }
-        .msg { margin-bottom: 8px; border-left: 2px solid var(--cyan); padding-left: 5px; opacity: 0; animation: fadeIn 0.5s forwards; }
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        #topo-map {
-            width: 100%; height: 100%; filter: contrast(1.5) brightness(0.7) sepia(1) hue-rotate(120deg) invert(1);
-            opacity: 0.6; pointer-events: none;
-        }
-
-        .btn {
-            width: 100%; padding: 12px; margin-bottom: 5px;
-            background: transparent; border: 1px solid var(--border);
-            color: #fff; font-family: 'Orbitron'; font-size: 0.6rem;
-            text-transform: uppercase; transition: 0.2s;
-        }
-        .btn:hover { background: var(--neon); color: #000; font-weight: bold; }
-        .btn-kill { border-color: var(--blood); color: var(--blood); }
-        .btn-kill:hover { background: var(--blood); color: #fff; }
-
-        .big-num { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; }
-        .unit { font-size: 0.5rem; color: var(--border); }
     </style>
 </head>
-<body id="master-ui">
+<body>
 
     <header>
-        <div class="logo">ZENITH <span style="color:white">X</span></div>
-        <div id="quantum-clock" style="color: var(--cyan); font-weight: bold;">00:00:00:000</div>
-        <div style="font-size: 0.6rem; border: 1px solid var(--blood); padding: 2px 10px; color: var(--blood);">DEFCON 1: MAXIMUM ALERT</div>
+        <h1>DEV TOOLS HUB</h1>
+        <p>La tua dashboard di strumenti per sviluppatori</p>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Cerca tool (es. json, regex, git)..."/>
+            <button id="themeToggle">Light Mode</button>
+        </div>
     </header>
 
-    <div class="omni-grid">
-        
-        <div class="module m-wealth">
-            <h2>Global Hegemony Assets</h2>
-            <div class="asset-row"><span>LIQUIDITY</span><span class="val-gold" id="liquidity">1.42 Quadrillion €</span></div>
-            <div class="asset-row"><span>GOLD RESERVES</span><span class="val-gold" id="gold">850.000 T</span></div>
-            <div class="asset-row"><span>ENERGY NODES</span><span style="color:var(--neon)">98.2% ACTIVE</span></div>
-            <canvas id="wealthChart" style="margin-top: 15px;"></canvas>
-        </div>
-
-        <div class="module m-map">
-            <h2>Tactical Intelligence Map</h2>
-            <iframe id="topo-map" src="https://www.openstreetmap.org/export/embed.html?bbox=-180,-85,180,85&layer=cyclemap"></iframe>
-            <div style="position: absolute; top: 20px; right: 20px; text-align: right; background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid var(--cyan);">
-                <div style="color:var(--cyan)">SATELLITE SYNC: OK</div>
-                <div style="font-size: 0.5rem;">TARGET: 45°27'51"N 9°11'22"E</div>
+    <!-- CODING -->
+    <div class="section">
+        <h2>Coding & Linguaggi</h2>
+        <div class="grid">
+            <div class="card" data-tags="devdocs reference docs">
+                <h3>DevDocs</h3>
+                <p>Documentazione offline di tantissimi linguaggi e framework</p>
+            </div>
+            <div class="card" data-tags="quickref cheatsheet git python js">
+                <h3>QuickRef.ME</h3>
+                <p>Migliaia di cheat sheet veloci e ricercabili</p>
+            </div>
+            <div class="card" data-tags="devhints cheatsheet">
+                <h3>Devhints</h3>
+                <p>Cheat sheet minimal e molto belle</p>
+            </div>
+            <div class="card" data-tags="overapi cheatsheet">
+                <h3>OverAPI</h3>
+                <p>Collezione enorme di cheat sheet per ogni linguaggio</p>
             </div>
         </div>
-
-        <div class="module m-chat">
-            <h2>Neural Link [ENCRYPTED]</h2>
-            <div id="neural-chat"></div>
-        </div>
-
-        <div class="module m-status">
-            <h2>Core Biometrics</h2>
-            <div style="margin-bottom: 15px;">
-                <div class="unit">NEURAL LOAD</div>
-                <div class="big-num">14.4 <span style="font-size: 0.8rem">THz</span></div>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <div class="unit">GLOBAL UPLINK</div>
-                <div class="big-num" style="color:var(--neon)">99.9<span style="font-size: 0.8rem">%</span></div>
-            </div>
-            <div class="unit">ATMOSPHERIC PRESSURE</div>
-            <div class="big-num">1013 <span style="font-size: 0.8rem">hPa</span></div>
-        </div>
-
-        <div class="module m-intel">
-            <h2>Deep Web Intelligence Feed</h2>
-            <marquee direction="up" scrollamount="1" style="height: 100px; color: var(--gold); font-size: 0.6rem;">
-                > INTERCEPTED: Signal from Mars Colony Alpha - Status Green<br><br>
-                > CRYPTO: Bitcoin hard-fork protocol initiated by Zenith AI<br><br>
-                > GEOPOLITICS: Energy grid in sector 4 shifted to Zenith Core<br><br>
-                > SECURITY: Firewall blocked 4.2 million attacks in 0.4 seconds
-            </marquee>
-        </div>
-
-        <div class="module m-control">
-            <h2>Command Protocol</h2>
-            <button class="btn">ACTIVATE DRONE FLEET</button>
-            <button class="btn">FREEZE GLOBAL ASSETS</button>
-            <button class="btn">SILENCE MEDIA</button>
-            <button class="btn btn-kill" onclick="killEverything()">SHUTDOWN GLOBAL SERVER</button>
-            <div style="margin-top: 10px; font-size: 0.5rem; text-align: center; color: var(--blood);">DANGER: EXECUTING SHUTDOWN WILL COLLAPSE THE GRID</div>
-        </div>
-
     </div>
 
+    <!-- WEB -->
+    <div class="section">
+        <h2>Web & Browser</h2>
+        <div class="grid">
+            <div class="card" data-tags="caniuse browser support">
+                <h3>Can I Use</h3>
+                <p>Compatibilità browser per HTML, CSS, JS</p>
+            </div>
+            <div class="card" data-tags="carbon code image">
+                <h3>Carbon</h3>
+                <p>Crea immagini estetiche del tuo codice</p>
+            </div>
+            <div class="card" data-tags="pagespeed optimization">
+                <h3>PageSpeed Insights</h3>
+                <p>Analisi performance e suggerimenti Google</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMAT & CONVERT -->
+    <div class="section">
+        <h2>Formatta & Converti</h2>
+        <div class="grid">
+            <div class="card" data-tags="json formatter validator">
+                <h3>JSON Formatter</h3>
+                <p>Formatta, valida, comprimi JSON</p>
+            </div>
+            <div class="card" data-tags="beautifier format js css html">
+                <h3>JS Beautifier</h3>
+                <p>Formatta JS, CSS, HTML, JSON, SQL</p>
+            </div>
+            <div class="card" data-tags="it-tools converter base64 yaml">
+                <h3>IT-Tools</h3>
+                <p>Centinaia di mini-tool: JSON, Base64, YAML, Cron...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECURITY & CRYPTO -->
+    <div class="section">
+        <h2>Security & Crypto</h2>
+        <div class="grid">
+            <div class="card" data-tags="cyberchef encoding crypto forensics">
+                <h3>CyberChef</h3>
+                <p>Il coltellino svizzero per crittografia e manipolazione dati</p>
+            </div>
+            <div class="card" data-tags="regex tester">
+                <h3>Regex101</h3>
+                <p>Tester regex con spiegazione dettagliata</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESIGN & SHARE -->
+    <div class="section">
+        <h2>Design & Condivisione</h2>
+        <div class="grid">
+            <div class="card" data-tags="color palette generator">
+                <h3>Coolors</h3>
+                <p>Generatore di palette colori</p>
+            </div>
+            <div class="card" data-tags="excalidraw draw diagram">
+                <h3>Excalidraw</h3>
+                <p>Disegna diagrammi e sketch a mano libera</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Dashboard creata per sviluppatori • Clicca sulle card per aprire</p>
+    </footer>
+
     <script>
-        // ───────────────────────────────────────────────
-        // CONFIG – INSERISCI LA TUA NEWSAPI KEY QUI
-        // Ottienila gratis: https://newsapi.org/
-        // ───────────────────────────────────────────────
-        const NEWS_API_KEY = 'INSERISCI_TUA_API_KEY_QUI';
+        // Ricerca semplice
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card');
 
-        // Orologio Quantistico
-        setInterval(() => {
-            const now = new Date();
-            const ms = String(now.getMilliseconds()).padStart(3, '0');
-            document.getElementById('quantum-clock').innerText = now.toLocaleTimeString('it-IT') + ":" + ms;
-        }, 1);
-
-        // Dati reali: Crypto + Oro
-        async function updateRealAssets() {
-            try {
-                // Crypto
-                const cryptoRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur');
-                const crypto = await cryptoRes.json();
-                const btc = crypto.bitcoin?.eur?.toLocaleString('it-IT') || 'N/D';
-                const eth = crypto.ethereum?.eur?.toLocaleString('it-IT') || 'N/D';
-
-                // Oro (GoldAPI free tier)
-                const goldRes = await fetch('https://www.goldapi.io/api/XAU/EUR');
-                const goldData = await goldRes.json();
-                const goldPrice = goldData.price ? goldData.price.toLocaleString('it-IT', {minimumFractionDigits:2}) : 'N/D';
-
-                // Aggiorna display
-                document.getElementById('liquidity').innerHTML = `1.42 Quadrillion € <small style="color:#aaa">(BTC ${btc} €)</small>`;
-                document.getElementById('gold').innerHTML = `${goldPrice} €/oz <small style="color:#aaa">live</small>`;
-            } catch (e) {
-                console.log('Errore dati reali', e);
-            }
-        }
-        updateRealAssets();
-        setInterval(updateRealAssets, 60000);
-
-        // Notizie reali nel Neural Chat
-        async function loadRealNews() {
-            if (!NEWS_API_KEY || NEWS_API_KEY.includes('INSERISCI')) return;
-
-            try {
-                const url = `https://newsapi.org/v2/top-headlines?country=it&category=general&pageSize=6&apiKey=${NEWS_API_KEY}`;
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (data.status === 'ok' && data.articles) {
-                    const chat = document.getElementById('neural-chat');
-                    data.articles.forEach(a => {
-                        const msg = document.createElement('div');
-                        msg.className = 'msg';
-                        msg.textContent = `> \( {a.title} ( \){a.source.name})`;
-                        chat.prepend(msg);
-                        if (chat.children.length > 10) chat.removeChild(chat.lastChild);
-                    });
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            cards.forEach(card => {
+                const tags = card.getAttribute('data-tags') || '';
+                const text = card.textContent.toLowerCase();
+                if (term === '' || tags.includes(term) || text.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
                 }
-            } catch (e) {
-                console.log('Errore news', e);
-            }
-        }
-        if (NEWS_API_KEY && !NEWS_API_KEY.includes('a7405ffa9a294122a3e6d495edaefb7a')) {
-            loadRealNews();
-            setInterval(loadRealNews, 300000); // ogni 5 minuti
-        }
-
-        // Chat fallback (se news non carica)
-        const fallback = [
-            "CORE: Quantum core at 99.97% efficiency",
-            "ALERT: Anomalous traffic detected - Asia Pacific",
-            "COMM: Mars relay link stable",
-            "SEC: Encryption lattice reinforced"
-        ];
-        setInterval(() => {
-            if (Math.random() > 0.7) {
-                const chat = document.getElementById('neural-chat');
-                const m = document.createElement('div');
-                m.className = 'msg';
-                m.textContent = `> ${fallback[Math.floor(Math.random() * fallback.length)]}`;
-                chat.prepend(m);
-                if (chat.children.length > 12) chat.removeChild(chat.lastChild);
-            }
-        }, 8000);
-
-        // Chart di esempio
-        new Chart(document.getElementById('wealthChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                datasets: [{
-                    label: 'Quadrillion €',
-                    data: [1.1, 1.3, 1.2, 1.42],
-                    backgroundColor: '#00ff9d'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { ticks: { color: '#555' } },
-                    x: { ticks: { color: '#555' } }
-                }
-            }
+            });
         });
 
-        // Shutdown
-        function killEverything() {
-            if (confirm("SEI SICURO? IL MONDO ANDRÀ OFFLINE.")) {
-                document.body.classList.add('kill-sequence');
-                setTimeout(() => {
-                    document.body.innerHTML = `
-                        <div style="background:#000; color:#f00; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:Orbitron; font-size:3.5rem; text-align:center; padding:20px;">
-                            GLOBAL SYSTEM TERMINATED<br><br>
-                            <span style="font-size:1.2rem; color:#fff;">ZENITH OMNIPOTENCE PROTOCOL COMPLETE</span><br>
-                            <span style="font-size:0.9rem; color:#444; margin-top:40px;">No recovery possible.</span>
-                        </div>
-                    `;
-                }, 1800);
-            }
-        }
+        // Toggle tema chiaro/scuro
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light');
+            themeToggle.textContent = document.body.classList.contains('light')
+                ? 'Dark Mode'
+                : 'Light Mode';
+        });
+
+        // Apri link al click
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const links = {
+                    "DevDocs": "https://devdocs.io/",
+                    "QuickRef.ME": "https://quickref.me/",
+                    "Devhints": "https://devhints.io/",
+                    "OverAPI": "https://overapi.com/",
+                    "Can I Use": "https://caniuse.com/",
+                    "Carbon": "https://carbon.now.sh/",
+                    "PageSpeed Insights": "https://pagespeed.web.dev/",
+                    "JSON Formatter": "https://jsonformatter.curiousconcept.com/",
+                    "JS Beautifier": "https://www.beautifier.io/",
+                    "IT-Tools": "https://it-tools.tech/",
+                    "CyberChef": "https://gchq.github.io/CyberChef/",
+                    "Regex101": "https://regex101.com/",
+                    "Coolors": "https://coolors.co/",
+                    "Excalidraw": "https://excalidraw.com/"
+                };
+                const title = card.querySelector('h3').textContent.trim();
+                if (links[title]) {
+                    window.open(links[title], '_blank');
+                }
+            });
+        });
     </script>
+
 </body>
-</html>
+    </html>
