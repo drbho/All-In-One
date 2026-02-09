@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>DevHub | Native Tools</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>DevHub | Native Tools Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --bg: #0f172a;
             --card-bg: #1e293b;
             --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
             --text: #f8fafc;
             --text-dim: #94a3b8;
             --border: #334155;
-            --modal-bg: rgba(15, 23, 42, 0.95);
+            --modal-bg: rgba(15, 23, 42, 0.9);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,104 +24,100 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
             color: var(--text);
-            padding-bottom: 50px;
+            line-height: 1.6;
         }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        header { text-align: center; padding: 60px 0; }
-        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -2px; }
-        h1 span { color: var(--accent); }
+        header { text-align: center; padding: 80px 0 40px; }
+        h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -3px; margin-bottom: 10px; }
+        h1 span { color: var(--accent); text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
 
         /* Search */
-        .search-container { margin-bottom: 40px; text-align: center; }
+        .search-wrapper { position: sticky; top: 20px; z-index: 100; text-align: center; margin-bottom: 50px; }
         #searchInput {
-            width: 100%; max-width: 500px;
-            padding: 15px 25px;
-            border-radius: 12px;
+            width: 100%; max-width: 600px;
+            padding: 18px 30px;
+            border-radius: 50px;
             border: 1px solid var(--border);
-            background: var(--card-bg);
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            outline: none; transition: 0.3s;
         }
+        #searchInput:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
 
         /* Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 16px;
+            padding: 30px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
-
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
             border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
+            background: #243147;
         }
+        .card h3 { margin-bottom: 12px; font-size: 1.4rem; color: var(--accent); }
+        .card p { font-size: 0.95rem; color: var(--text-dim); }
 
-        .card h3 { margin-bottom: 10px; color: var(--accent); }
-        .card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.5; }
-
-        /* Modal System */
+        /* Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--modal-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             display: none; justify-content: center; align-items: center;
-            z-index: 1000;
+            z-index: 1000; padding: 20px;
         }
-
         .modal-content {
             background: var(--card-bg);
-            width: 90%; max-width: 800px;
+            width: 100%; max-width: 900px;
             max-height: 90vh;
-            border-radius: 24px;
+            border-radius: 28px;
             border: 1px solid var(--border);
             padding: 40px;
             position: relative;
             overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
         .close-modal {
-            position: absolute; top: 20px; right: 20px;
-            background: none; border: none; color: white;
-            font-size: 2rem; cursor: pointer;
+            position: absolute; top: 25px; right: 25px;
+            background: #334155; border: none; color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
         }
+        .close-modal:hover { background: #ef4444; }
 
-        /* Tool UI Components */
-        .tool-ui { display: flex; flex-direction: column; gap: 20px; }
-        textarea {
-            width: 100%; height: 200px;
+        /* Tools UI */
+        .tool-layout { display: flex; flex-direction: column; gap: 20px; }
+        .flex-row { display: flex; gap: 20px; }
+        textarea, .preview-box {
+            width: 100%; min-height: 250px;
             background: #0f172a; border: 1px solid var(--border);
-            border-radius: 12px; color: #38bdf8;
-            padding: 15px; font-family: 'JetBrains Mono', monospace;
-            resize: none;
+            border-radius: 15px; color: #e2e8f0;
+            padding: 20px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem; resize: vertical;
         }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        button.action-btn {
-            padding: 12px 24px; background: var(--accent);
-            border: none; border-radius: 8px; font-weight: 600;
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        button.action-btn:hover { opacity: 0.8; }
+        .preview-box { background: #1e293b; overflow-y: auto; border-left: 4px solid var(--accent); }
         
-        .result-area {
-            background: #000; padding: 15px; border-radius: 12px;
-            min-height: 50px; word-break: break-all;
-            border-left: 4px solid var(--accent);
+        .action-btn {
+            padding: 14px 28px; background: var(--accent);
+            border: none; border-radius: 12px; font-weight: 700;
+            color: #0f172a; cursor: pointer; transition: 0.2s;
         }
+        .action-btn:hover { background: var(--accent-hover); transform: scale(1.02); }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .modal-content { padding: 20px; }
+        #qrcode { background: white; padding: 20px; border-radius: 10px; display: inline-block; margin: 20px 0; }
+
+        @media (max-width: 768px) {
+            .flex-row { flex-direction: column; }
+            h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -129,38 +126,37 @@
     <div class="container">
         <header>
             <h1>Dev<span>Hub</span> Native</h1>
-            <p style="color: var(--text-dim)">Strumenti integrati, veloci e sicuri.</p>
+            <p style="color: var(--text-dim); font-size: 1.2rem;">L'officina completa, direttamente nel tuo browser.</p>
         </header>
 
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Cerca un tool interno...">
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Cerca uno strumento (es. QR, JSON, Password)...">
         </div>
 
         <div class="grid" id="toolsGrid">
+            <div class="card" onclick="openTool('qr')">
+                <h3>QR Code Generator</h3>
+                <p>Crea codici QR istantanei per URL o testi. Privato e veloce.</p>
+            </div>
+            <div class="card" onclick="openTool('md')">
+                <h3>Markdown Live</h3>
+                <p>Scrivi in Markdown e visualizza l'anteprima HTML in tempo reale.</p>
+            </div>
             <div class="card" onclick="openTool('json')">
                 <h3>JSON Formatter</h3>
-                <p>Formatta, valida e rendi leggibile il tuo codice JSON all'istante.</p>
-            </div>
-            <div class="card" onclick="openTool('base64')">
-                <h3>Base64 Converter</h3>
-                <p>Codifica e decodifica stringhe in formato Base64 senza inviare dati online.</p>
-            </div>
-            <div class="card" onclick="openTool('case')">
-                <h3>Case Converter</h3>
-                <p>Trasforma i tuoi testi in UPPERCASE, lowercase o Title Case.</p>
+                <p>Formatta e valida i tuoi oggetti JSON con indentazione pulita.</p>
             </div>
             <div class="card" onclick="openTool('password')">
-                <h3>Password Gen</h3>
-                <p>Genera password sicure con parametri personalizzabili nel browser.</p>
+                <h3>Secure Pass</h3>
+                <p>Genera chiavi d'accesso ad alta entropia localmente.</p>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeTool()">&times;</button>
-            <div id="toolInterface">
-                </div>
+            <button class="close-modal" onclick="closeTool()">✕</button>
+            <div id="toolInterface"></div>
         </div>
     </div>
 
@@ -168,110 +164,105 @@
         const toolInterface = document.getElementById('toolInterface');
         const modalOverlay = document.getElementById('modalOverlay');
 
-        // Configurazione dei Tool Interni
         const tools = {
+            qr: {
+                render: () => `
+                    <div class="tool-layout">
+                        <h2>Generatore QR Code</h2>
+                        <input type="text" id="qrInput" class="preview-box" style="min-height:auto" placeholder="Inserisci URL o testo..." oninput="genQR()">
+                        <div style="text-align:center"><div id="qrcode"></div></div>
+                        <p style="color:var(--text-dim)">Il codice si aggiorna mentre scrivi.</p>
+                    </div>
+                `
+            },
+            md: {
+                render: () => `
+                    <div class="tool-layout">
+                        <h2>Markdown Previewer</h2>
+                        <div class="flex-row">
+                            <textarea id="mdInput" placeholder="# Ciao mondo\nScrivi qui..." oninput="renderMD()"></textarea>
+                            <div id="mdPreview" class="preview-box">Anteprima...</div>
+                        </div>
+                    </div>
+                `
+            },
             json: {
-                title: "JSON Formatter",
                 render: () => `
-                    <div class="tool-ui">
+                    <div class="tool-layout">
                         <h2>JSON Formatter</h2>
-                        <textarea id="jsonInput" placeholder="Incolla qui il tuo JSON sporco..."></textarea>
-                        <div class="btn-group">
-                            <button class="action-btn" onclick="runJson()">Formatta JSON</button>
-                            <button class="action-btn" style="background:#475569" onclick="clearTool('jsonInput')">Pulisci</button>
-                        </div>
-                    </div>
-                `
-            },
-            base64: {
-                title: "Base64 Converter",
-                render: () => `
-                    <div class="tool-ui">
-                        <h2>Base64 Encoder/Decoder</h2>
-                        <textarea id="b64Input" placeholder="Inserisci testo o stringa base64..."></textarea>
-                        <div class="btn-group">
-                            <button class="action-btn" onclick="runB64('enc')">Codifica</button>
-                            <button class="action-btn" onclick="runB64('dec')">Decodifica</button>
-                        </div>
-                        <div class="result-area" id="b64Result">Il risultato apparirà qui...</div>
-                    </div>
-                `
-            },
-            case: {
-                title: "Case Converter",
-                render: () => `
-                    <div class="tool-ui">
-                        <h2>Case Converter</h2>
-                        <textarea id="caseInput" placeholder="Inserisci il testo..."></textarea>
-                        <div class="btn-group">
-                            <button class="action-btn" onclick="runCase('up')">TUTTO MAIUSCOLO</button>
-                            <button class="action-btn" onclick="runCase('low')">tutto minuscolo</button>
-                        </div>
+                        <textarea id="jsonInput" placeholder='{"key":"value"}'></textarea>
+                        <button class="action-btn" onclick="runJson()">Formatta Codice</button>
                     </div>
                 `
             },
             password: {
-                title: "Password Generator",
                 render: () => `
-                    <div class="tool-ui">
-                        <h2>Password Generator</h2>
-                        <div class="result-area" id="passResult" style="font-size: 1.5rem; text-align:center;">********</div>
-                        <div class="btn-group">
-                            <button class="action-btn" onclick="runPass()">Genera Nuova</button>
-                        </div>
+                    <div class="tool-layout" style="text-align:center">
+                        <h2>Secure Password Generator</h2>
+                        <div id="passResult" class="preview-box" style="font-size:2rem; min-height:auto; margin:20px 0">********</div>
+                        <button class="action-btn" onclick="runPass()">Genera Password Sicura</button>
                     </div>
                 `
             }
         };
 
-        // Funzioni Logiche dei Tool
+        // --- Logica Tool ---
+        
+        // QR Code
+        function genQR() {
+            const val = document.getElementById('qrInput').value;
+            const container = document.getElementById('qrcode');
+            container.innerHTML = "";
+            if(val) {
+                new QRCode(container, { text: val, width: 200, height: 200, colorDark: "#0f172a" });
+            }
+        }
+
+        // Markdown (Semplificato per demo)
+        function renderMD() {
+            const val = document.getElementById('mdInput').value;
+            const preview = document.getElementById('mdPreview');
+            // Nota: Per un MD completo useresti una libreria come 'marked'. 
+            // Qui simuliamo i titoli per mostrare la reattività.
+            let html = val.replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                          .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>');
+            preview.innerHTML = html || "Anteprima...";
+        }
+
+        // JSON
         function runJson() {
             const el = document.getElementById('jsonInput');
             try {
-                const obj = JSON.parse(el.value);
-                el.value = JSON.stringify(obj, null, 4);
-            } catch(e) { alert("JSON non valido!"); }
+                el.value = JSON.stringify(JSON.parse(el.value), null, 4);
+            } catch(e) { alert("Errore: JSON non valido"); }
         }
 
-        function runB64(mode) {
-            const input = document.getElementById('b64Input').value;
-            const res = document.getElementById('b64Result');
-            try {
-                res.innerText = (mode === 'enc') ? btoa(input) : atob(input);
-            } catch(e) { res.innerText = "Errore: Formato non valido."; }
-        }
-
-        function runCase(mode) {
-            const el = document.getElementById('caseInput');
-            el.value = (mode === 'up') ? el.value.toUpperCase() : el.value.toLowerCase();
-        }
-
+        // Password
         function runPass() {
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-            let retVal = "";
-            for (let i = 0; i < 16; ++i) {
-                retVal += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            document.getElementById('passResult').innerText = retVal;
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            const pass = Array.from(crypto.getRandomValues(new Uint32Array(16)))
+                              .map(x => chars[x % chars.length]).join('');
+            document.getElementById('passResult').innerText = pass;
         }
 
-        // Gestione UI
+        // --- Gestione UI ---
         function openTool(id) {
             toolInterface.innerHTML = tools[id].render();
             modalOverlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            if(id === 'qr') setTimeout(genQR, 100); // Trigger iniziale
         }
 
-        function closeTool() {
-            modalOverlay.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+        function closeTool() { modalOverlay.style.display = 'none'; }
 
-        function clearTool(id) { document.getElementById(id).value = ''; }
-
-        window.onclick = (event) => {
-            if (event.target == modalOverlay) closeTool();
-        }
+        // Ricerca Card
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        });
     </script>
 </body>
 </html>
