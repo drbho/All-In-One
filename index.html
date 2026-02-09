@@ -19,7 +19,6 @@
             display: flex; flex-direction: column;
         }
 
-        /* --- EFFETTO GLITCH SHUTDOWN --- */
         @keyframes glitch {
             0% { transform: translate(0); }
             20% { transform: translate(-5px, 5px); }
@@ -31,7 +30,6 @@
 
         .kill-sequence { animation: glitch 0.1s infinite; filter: invert(1); background: white !important; }
 
-        /* --- HEADER --- */
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 20px; border: 1px solid var(--border);
@@ -41,7 +39,6 @@
 
         .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 15px; font-size: 1.2rem; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
 
-        /* --- GRID SYSTEM --- */
         .omni-grid {
             display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(12, 1fr);
             gap: 5px; flex-grow: 1;
@@ -53,7 +50,6 @@
         }
         .module:hover { border-color: var(--neon); box-shadow: inset 0 0 15px rgba(0, 255, 157, 0.1); }
 
-        /* --- POSITIONING --- */
         .m-wealth { grid-column: span 3; grid-row: span 5; }
         .m-map { grid-column: span 6; grid-row: span 8; border: 2px solid var(--cyan); }
         .m-chat { grid-column: span 3; grid-row: span 5; }
@@ -61,22 +57,18 @@
         .m-intel { grid-column: span 6; grid-row: span 4; }
         .m-control { grid-column: span 3; grid-row: span 7; }
 
-        /* --- ASSETS STYLING --- */
         .asset-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .val-gold { color: var(--gold); font-weight: bold; }
 
-        /* --- CHAT CRIPTATA --- */
-        #neural-chat { font-size: 0.65rem; height: 85%; overflow-y: hidden; color: var(--cyan); }
+        #neural-chat { font-size: 0.65rem; height: 85%; overflow-y: auto; color: var(--cyan); }
         .msg { margin-bottom: 8px; border-left: 2px solid var(--cyan); padding-left: 5px; opacity: 0; animation: fadeIn 0.5s forwards; }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- MAPPA --- */
         #topo-map {
             width: 100%; height: 100%; filter: contrast(1.5) brightness(0.7) sepia(1) hue-rotate(120deg) invert(1);
             opacity: 0.6; pointer-events: none;
         }
 
-        /* --- BUTTONS --- */
         .btn {
             width: 100%; padding: 12px; margin-bottom: 5px;
             background: transparent; border: 1px solid var(--border);
@@ -87,10 +79,8 @@
         .btn-kill { border-color: var(--blood); color: var(--blood); }
         .btn-kill:hover { background: var(--blood); color: #fff; }
 
-        /* --- DATA VISUALS --- */
         .big-num { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; }
         .unit { font-size: 0.5rem; color: var(--border); }
-
     </style>
 </head>
 <body id="master-ui">
@@ -105,8 +95,8 @@
         
         <div class="module m-wealth">
             <h2>Global Hegemony Assets</h2>
-            <div class="asset-row"><span>LIQUIDITY</span><span class="val-gold">1.42 Quadrillion €</span></div>
-            <div class="asset-row"><span>GOLD RESERVES</span><span class="val-gold">850.000 T</span></div>
+            <div class="asset-row"><span>LIQUIDITY</span><span class="val-gold" id="liquidity">1.42 Quadrillion €</span></div>
+            <div class="asset-row"><span>GOLD RESERVES</span><span class="val-gold" id="gold">850.000 T</span></div>
             <div class="asset-row"><span>ENERGY NODES</span><span style="color:var(--neon)">98.2% ACTIVE</span></div>
             <canvas id="wealthChart" style="margin-top: 15px;"></canvas>
         </div>
@@ -161,6 +151,12 @@
     </div>
 
     <script>
+        // ───────────────────────────────────────────────
+        // CONFIG – INSERISCI LA TUA NEWSAPI KEY QUI
+        // Ottienila gratis: https://newsapi.org/
+        // ───────────────────────────────────────────────
+        const NEWS_API_KEY = 'INSERISCI_TUA_API_KEY_QUI';
+
         // Orologio Quantistico
         setInterval(() => {
             const now = new Date();
@@ -168,26 +164,78 @@
             document.getElementById('quantum-clock').innerText = now.toLocaleTimeString('it-IT') + ":" + ms;
         }, 1);
 
-        // Neural Chat Simulato
-        const chat = document.getElementById('neural-chat');
-        const messages = [
-            "COMM: Unknown signal detected in Antarctica.",
-            "CORE: All markets under Zenith control.",
-            "USER: Status report on Project X?",
-            "CORE: Project X is 100% stable.",
-            "ALERT: Global liquidity redirected."
+        // Dati reali: Crypto + Oro
+        async function updateRealAssets() {
+            try {
+                // Crypto
+                const cryptoRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur');
+                const crypto = await cryptoRes.json();
+                const btc = crypto.bitcoin?.eur?.toLocaleString('it-IT') || 'N/D';
+                const eth = crypto.ethereum?.eur?.toLocaleString('it-IT') || 'N/D';
+
+                // Oro (GoldAPI free tier)
+                const goldRes = await fetch('https://www.goldapi.io/api/XAU/EUR');
+                const goldData = await goldRes.json();
+                const goldPrice = goldData.price ? goldData.price.toLocaleString('it-IT', {minimumFractionDigits:2}) : 'N/D';
+
+                // Aggiorna display
+                document.getElementById('liquidity').innerHTML = `1.42 Quadrillion € <small style="color:#aaa">(BTC ${btc} €)</small>`;
+                document.getElementById('gold').innerHTML = `${goldPrice} €/oz <small style="color:#aaa">live</small>`;
+            } catch (e) {
+                console.log('Errore dati reali', e);
+            }
+        }
+        updateRealAssets();
+        setInterval(updateRealAssets, 60000);
+
+        // Notizie reali nel Neural Chat
+        async function loadRealNews() {
+            if (!NEWS_API_KEY || NEWS_API_KEY.includes('INSERISCI')) return;
+
+            try {
+                const url = `https://newsapi.org/v2/top-headlines?country=it&category=general&pageSize=6&apiKey=${NEWS_API_KEY}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.status === 'ok' && data.articles) {
+                    const chat = document.getElementById('neural-chat');
+                    data.articles.forEach(a => {
+                        const msg = document.createElement('div');
+                        msg.className = 'msg';
+                        msg.textContent = `> \( {a.title} ( \){a.source.name})`;
+                        chat.prepend(msg);
+                        if (chat.children.length > 10) chat.removeChild(chat.lastChild);
+                    });
+                }
+            } catch (e) {
+                console.log('Errore news', e);
+            }
+        }
+        if (NEWS_API_KEY && !NEWS_API_KEY.includes('a7405ffa9a294122a3e6d495edaefb7a')) {
+            loadRealNews();
+            setInterval(loadRealNews, 300000); // ogni 5 minuti
+        }
+
+        // Chat fallback (se news non carica)
+        const fallback = [
+            "CORE: Quantum core at 99.97% efficiency",
+            "ALERT: Anomalous traffic detected - Asia Pacific",
+            "COMM: Mars relay link stable",
+            "SEC: Encryption lattice reinforced"
         ];
         setInterval(() => {
-            const m = document.createElement('div');
-            m.className = 'msg';
-            m.innerText = `> ${messages[Math.floor(Math.random()*messages.length)]}`;
-            chat.prepend(m);
-            if(chat.childNodes.length > 10) chat.removeChild(chat.lastChild);
-        }, 3000);
+            if (Math.random() > 0.7) {
+                const chat = document.getElementById('neural-chat');
+                const m = document.createElement('div');
+                m.className = 'msg';
+                m.textContent = `> ${fallback[Math.floor(Math.random() * fallback.length)]}`;
+                chat.prepend(m);
+                if (chat.children.length > 12) chat.removeChild(chat.lastChild);
+            }
+        }, 8000);
 
-        // Wealth Chart
-        const ctx = document.getElementById('wealthChart').getContext('2d');
-        new Chart(ctx, {
+        // Chart di esempio
+        new Chart(document.getElementById('wealthChart'), {
             type: 'bar',
             data: {
                 labels: ['Q1', 'Q2', 'Q3', 'Q4'],
@@ -197,21 +245,29 @@
                     backgroundColor: '#00ff9d'
                 }]
             },
-            options: { responsive: true, plugins: {legend: {display: false}}, scales: {y: {ticks: {color: '#555'}}, x: {ticks: {color: '#555'}}} }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { ticks: { color: '#555' } },
+                    x: { ticks: { color: '#555' } }
+                }
+            }
         });
 
-        // SHUTDOWN GLOBALE
+        // Shutdown
         function killEverything() {
-            if(confirm("SEI SICURO? IL MONDO ANDRÀ OFFLINE.")) {
+            if (confirm("SEI SICURO? IL MONDO ANDRÀ OFFLINE.")) {
                 document.body.classList.add('kill-sequence');
                 setTimeout(() => {
                     document.body.innerHTML = `
-                        <div style="background:#000; color:#f00; height:100vh; display:flex; align-items:center; justify-content:center; font-family:Orbitron; font-size:3rem; text-align:center;">
+                        <div style="background:#000; color:#f00; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:Orbitron; font-size:3.5rem; text-align:center; padding:20px;">
                             GLOBAL SYSTEM TERMINATED<br><br>
-                            <span style="font-size:1rem; color:white;">ZENITH OMNIPOTENCE HAS LEFT THE BUILDING</span>
+                            <span style="font-size:1.2rem; color:#fff;">ZENITH OMNIPOTENCE PROTOCOL COMPLETE</span><br>
+                            <span style="font-size:0.9rem; color:#444; margin-top:40px;">No recovery possible.</span>
                         </div>
                     `;
-                }, 2000);
+                }, 1800);
             }
         }
     </script>
