@@ -3,289 +3,275 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Dev Tools Hub - All-in-One</title>
+    <title>DevHub | Native Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0d0d0d;
-            --card-bg: #141414;
-            --text: #e0e0e0;
-            --accent: #00ff9d;
-            --accent-glow: rgba(0, 255, 157, 0.2);
-            --border: #333;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #334155;
+            --modal-bg: rgba(15, 23, 42, 0.95);
         }
-        body.light {
-            --bg: #f5f5f5;
-            --card-bg: #ffffff;
-            --text: #1a1a1a;
-            --accent: #006633;
-            --accent-glow: rgba(0, 102, 51, 0.15);
-            --border: #ddd;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            padding: 20px;
-            transition: background 0.4s, color 0.4s;
+            padding-bottom: 50px;
         }
-        header {
-            text-align: center;
-            padding: 2rem 1rem;
-            margin-bottom: 2rem;
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        h1 {
-            font-size: 3rem;
-            color: var(--accent);
-            text-shadow: 0 0 15px var(--accent-glow);
-            margin-bottom: 0.5rem;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-            flex-wrap: wrap;
-        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        header { text-align: center; padding: 60px 0; }
+        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -2px; }
+        h1 span { color: var(--accent); }
+
+        /* Search */
+        .search-container { margin-bottom: 40px; text-align: center; }
         #searchInput {
-            padding: 12px 16px;
-            width: 320px;
-            max-width: 100%;
-            border: 1px solid var(--border);
+            width: 100%; max-width: 500px;
+            padding: 15px 25px;
             border-radius: 12px;
+            border: 1px solid var(--border);
             background: var(--card-bg);
-            color: var(--text);
+            color: white;
             font-size: 1rem;
         }
-        #themeToggle {
-            padding: 10px 18px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .section {
-            margin: 2.5rem 0;
-        }
-        .section h2 {
-            color: var(--accent);
-            margin-bottom: 1.2rem;
-            font-size: 1.8rem;
-            border-left: 5px solid var(--accent);
-            padding-left: 12px;
-        }
+
+        /* Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 18px;
+            gap: 20px;
         }
+
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.4rem;
-            transition: all 0.25s ease;
+            padding: 25px;
+            border-radius: 16px;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-5px);
             border-color: var(--accent);
-            box-shadow: 0 12px 30px var(--accent-glow);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
         }
-        .card h3 {
-            color: var(--accent);
-            margin-bottom: 0.6rem;
-            font-size: 1.25rem;
+
+        .card h3 { margin-bottom: 10px; color: var(--accent); }
+        .card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.5; }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-bg);
+            backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000;
         }
-        .card p {
-            color: #aaa;
-            font-size: 0.94rem;
-            line-height: 1.45;
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%; max-width: 800px;
+            max-height: 90vh;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 40px;
+            position: relative;
+            overflow-y: auto;
         }
-        footer {
-            text-align: center;
-            margin-top: 4rem;
-            color: #666;
-            font-size: 0.9rem;
+
+        .close-modal {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: none; color: white;
+            font-size: 2rem; cursor: pointer;
+        }
+
+        /* Tool UI Components */
+        .tool-ui { display: flex; flex-direction: column; gap: 20px; }
+        textarea {
+            width: 100%; height: 200px;
+            background: #0f172a; border: 1px solid var(--border);
+            border-radius: 12px; color: #38bdf8;
+            padding: 15px; font-family: 'JetBrains Mono', monospace;
+            resize: none;
+        }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        button.action-btn {
+            padding: 12px 24px; background: var(--accent);
+            border: none; border-radius: 8px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        button.action-btn:hover { opacity: 0.8; }
+        
+        .result-area {
+            background: #000; padding: 15px; border-radius: 12px;
+            min-height: 50px; word-break: break-all;
+            border-left: 4px solid var(--accent);
         }
 
         @media (max-width: 600px) {
-            h1 { font-size: 2.3rem; }
-            .controls { flex-direction: column; align-items: center; }
+            h1 { font-size: 2rem; }
+            .modal-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>DEV TOOLS HUB</h1>
-        <p>La tua dashboard di strumenti per sviluppatori</p>
+    <div class="container">
+        <header>
+            <h1>Dev<span>Hub</span> Native</h1>
+            <p style="color: var(--text-dim)">Strumenti integrati, veloci e sicuri.</p>
+        </header>
 
-        <div class="controls">
-            <input type="text" id="searchInput" placeholder="Cerca tool (es. json, regex, git)..."/>
-            <button id="themeToggle">Light Mode</button>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Cerca un tool interno...">
         </div>
-    </header>
 
-    <!-- CODING -->
-    <div class="section">
-        <h2>Coding & Linguaggi</h2>
-        <div class="grid">
-            <div class="card" data-tags="devdocs reference docs">
-                <h3>DevDocs</h3>
-                <p>Documentazione offline di tantissimi linguaggi e framework</p>
-            </div>
-            <div class="card" data-tags="quickref cheatsheet git python js">
-                <h3>QuickRef.ME</h3>
-                <p>Migliaia di cheat sheet veloci e ricercabili</p>
-            </div>
-            <div class="card" data-tags="devhints cheatsheet">
-                <h3>Devhints</h3>
-                <p>Cheat sheet minimal e molto belle</p>
-            </div>
-            <div class="card" data-tags="overapi cheatsheet">
-                <h3>OverAPI</h3>
-                <p>Collezione enorme di cheat sheet per ogni linguaggio</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- WEB -->
-    <div class="section">
-        <h2>Web & Browser</h2>
-        <div class="grid">
-            <div class="card" data-tags="caniuse browser support">
-                <h3>Can I Use</h3>
-                <p>Compatibilità browser per HTML, CSS, JS</p>
-            </div>
-            <div class="card" data-tags="carbon code image">
-                <h3>Carbon</h3>
-                <p>Crea immagini estetiche del tuo codice</p>
-            </div>
-            <div class="card" data-tags="pagespeed optimization">
-                <h3>PageSpeed Insights</h3>
-                <p>Analisi performance e suggerimenti Google</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- FORMAT & CONVERT -->
-    <div class="section">
-        <h2>Formatta & Converti</h2>
-        <div class="grid">
-            <div class="card" data-tags="json formatter validator">
+        <div class="grid" id="toolsGrid">
+            <div class="card" onclick="openTool('json')">
                 <h3>JSON Formatter</h3>
-                <p>Formatta, valida, comprimi JSON</p>
+                <p>Formatta, valida e rendi leggibile il tuo codice JSON all'istante.</p>
             </div>
-            <div class="card" data-tags="beautifier format js css html">
-                <h3>JS Beautifier</h3>
-                <p>Formatta JS, CSS, HTML, JSON, SQL</p>
+            <div class="card" onclick="openTool('base64')">
+                <h3>Base64 Converter</h3>
+                <p>Codifica e decodifica stringhe in formato Base64 senza inviare dati online.</p>
             </div>
-            <div class="card" data-tags="it-tools converter base64 yaml">
-                <h3>IT-Tools</h3>
-                <p>Centinaia di mini-tool: JSON, Base64, YAML, Cron...</p>
+            <div class="card" onclick="openTool('case')">
+                <h3>Case Converter</h3>
+                <p>Trasforma i tuoi testi in UPPERCASE, lowercase o Title Case.</p>
             </div>
-        </div>
-    </div>
-
-    <!-- SECURITY & CRYPTO -->
-    <div class="section">
-        <h2>Security & Crypto</h2>
-        <div class="grid">
-            <div class="card" data-tags="cyberchef encoding crypto forensics">
-                <h3>CyberChef</h3>
-                <p>Il coltellino svizzero per crittografia e manipolazione dati</p>
-            </div>
-            <div class="card" data-tags="regex tester">
-                <h3>Regex101</h3>
-                <p>Tester regex con spiegazione dettagliata</p>
+            <div class="card" onclick="openTool('password')">
+                <h3>Password Gen</h3>
+                <p>Genera password sicure con parametri personalizzabili nel browser.</p>
             </div>
         </div>
     </div>
 
-    <!-- DESIGN & SHARE -->
-    <div class="section">
-        <h2>Design & Condivisione</h2>
-        <div class="grid">
-            <div class="card" data-tags="color palette generator">
-                <h3>Coolors</h3>
-                <p>Generatore di palette colori</p>
-            </div>
-            <div class="card" data-tags="excalidraw draw diagram">
-                <h3>Excalidraw</h3>
-                <p>Disegna diagrammi e sketch a mano libera</p>
-            </div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeTool()">&times;</button>
+            <div id="toolInterface">
+                </div>
         </div>
     </div>
-
-    <footer>
-        <p>Dashboard creata per sviluppatori • Clicca sulle card per aprire</p>
-    </footer>
 
     <script>
-        // Ricerca semplice
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.card');
+        const toolInterface = document.getElementById('toolInterface');
+        const modalOverlay = document.getElementById('modalOverlay');
 
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            cards.forEach(card => {
-                const tags = card.getAttribute('data-tags') || '';
-                const text = card.textContent.toLowerCase();
-                if (term === '' || tags.includes(term) || text.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+        // Configurazione dei Tool Interni
+        const tools = {
+            json: {
+                title: "JSON Formatter",
+                render: () => `
+                    <div class="tool-ui">
+                        <h2>JSON Formatter</h2>
+                        <textarea id="jsonInput" placeholder="Incolla qui il tuo JSON sporco..."></textarea>
+                        <div class="btn-group">
+                            <button class="action-btn" onclick="runJson()">Formatta JSON</button>
+                            <button class="action-btn" style="background:#475569" onclick="clearTool('jsonInput')">Pulisci</button>
+                        </div>
+                    </div>
+                `
+            },
+            base64: {
+                title: "Base64 Converter",
+                render: () => `
+                    <div class="tool-ui">
+                        <h2>Base64 Encoder/Decoder</h2>
+                        <textarea id="b64Input" placeholder="Inserisci testo o stringa base64..."></textarea>
+                        <div class="btn-group">
+                            <button class="action-btn" onclick="runB64('enc')">Codifica</button>
+                            <button class="action-btn" onclick="runB64('dec')">Decodifica</button>
+                        </div>
+                        <div class="result-area" id="b64Result">Il risultato apparirà qui...</div>
+                    </div>
+                `
+            },
+            case: {
+                title: "Case Converter",
+                render: () => `
+                    <div class="tool-ui">
+                        <h2>Case Converter</h2>
+                        <textarea id="caseInput" placeholder="Inserisci il testo..."></textarea>
+                        <div class="btn-group">
+                            <button class="action-btn" onclick="runCase('up')">TUTTO MAIUSCOLO</button>
+                            <button class="action-btn" onclick="runCase('low')">tutto minuscolo</button>
+                        </div>
+                    </div>
+                `
+            },
+            password: {
+                title: "Password Generator",
+                render: () => `
+                    <div class="tool-ui">
+                        <h2>Password Generator</h2>
+                        <div class="result-area" id="passResult" style="font-size: 1.5rem; text-align:center;">********</div>
+                        <div class="btn-group">
+                            <button class="action-btn" onclick="runPass()">Genera Nuova</button>
+                        </div>
+                    </div>
+                `
+            }
+        };
 
-        // Toggle tema chiaro/scuro
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('light');
-            themeToggle.textContent = document.body.classList.contains('light')
-                ? 'Dark Mode'
-                : 'Light Mode';
-        });
+        // Funzioni Logiche dei Tool
+        function runJson() {
+            const el = document.getElementById('jsonInput');
+            try {
+                const obj = JSON.parse(el.value);
+                el.value = JSON.stringify(obj, null, 4);
+            } catch(e) { alert("JSON non valido!"); }
+        }
 
-        // Apri link al click
-        cards.forEach(card => {
-            card.addEventListener('click', () => {
-                const links = {
-                    "DevDocs": "https://devdocs.io/",
-                    "QuickRef.ME": "https://quickref.me/",
-                    "Devhints": "https://devhints.io/",
-                    "OverAPI": "https://overapi.com/",
-                    "Can I Use": "https://caniuse.com/",
-                    "Carbon": "https://carbon.now.sh/",
-                    "PageSpeed Insights": "https://pagespeed.web.dev/",
-                    "JSON Formatter": "https://jsonformatter.curiousconcept.com/",
-                    "JS Beautifier": "https://www.beautifier.io/",
-                    "IT-Tools": "https://it-tools.tech/",
-                    "CyberChef": "https://gchq.github.io/CyberChef/",
-                    "Regex101": "https://regex101.com/",
-                    "Coolors": "https://coolors.co/",
-                    "Excalidraw": "https://excalidraw.com/"
-                };
-                const title = card.querySelector('h3').textContent.trim();
-                if (links[title]) {
-                    window.open(links[title], '_blank');
-                }
-            });
-        });
+        function runB64(mode) {
+            const input = document.getElementById('b64Input').value;
+            const res = document.getElementById('b64Result');
+            try {
+                res.innerText = (mode === 'enc') ? btoa(input) : atob(input);
+            } catch(e) { res.innerText = "Errore: Formato non valido."; }
+        }
+
+        function runCase(mode) {
+            const el = document.getElementById('caseInput');
+            el.value = (mode === 'up') ? el.value.toUpperCase() : el.value.toLowerCase();
+        }
+
+        function runPass() {
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+            let retVal = "";
+            for (let i = 0; i < 16; ++i) {
+                retVal += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('passResult').innerText = retVal;
+        }
+
+        // Gestione UI
+        function openTool(id) {
+            toolInterface.innerHTML = tools[id].render();
+            modalOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTool() {
+            modalOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function clearTool(id) { document.getElementById(id).value = ''; }
+
+        window.onclick = (event) => {
+            if (event.target == modalOverlay) closeTool();
+        }
     </script>
-
 </body>
-    </html>
+</html>
